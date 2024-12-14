@@ -1,0 +1,89 @@
+// A launch configuration that compiles the extension and then opens it inside a new window
+// Use IntelliSense to learn about possible attributes.
+// Hover to view descriptions of existing attributes.
+// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Run Extension - Select Workspace",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"${input:disable-extensions}",
+				"${workspaceFolder}/test_projects/${input:workspaceName}"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"preLaunchTask": "npm package"
+		},
+		{
+			"name": "Install Packaged Extension - Select Workspace - Proposed API Enabled",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}/dummy-ext",
+				"--install-extension=bats-test-runner-1.0.0.vsix",
+				"--enable-proposed-api=kherring.bats-test-runner",
+				"${workspaceFolder}/test_projects/${input:workspaceName}"
+			]
+		},
+		{
+			"name": "Run Extension - pug challenge",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"c:/git/pug-challenge"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			]
+		}
+	],
+	"inputs": [
+		{
+			"id": "workspaceName",
+			"description": "Enter the name of the workspace to test",
+			"type": "pickString",
+			"options": [
+				"AtStart",
+				"DebugLines",
+				"proj0",
+				"proj1",
+				"proj2",
+				"proj3_debugLines",
+				"proj4",
+				"proj5_suites",
+				"proj6_dot_dir",
+				"proj7_load_performance",
+				"proj8_custom_command",
+				"proj9",
+				"projA",
+				"workspace0.code-workspace",
+				"workspace1.code-workspace",
+			]
+		},
+		{
+			"id": "disable-extensions",
+			"description": "Disable all extensions except the one being launched",
+			"type": "pickString",
+			"default": "Yes",
+			"options": [
+				{
+					"value": "",
+					"label": "No"
+				},
+				{
+					"value": "--disable-extensions",
+					"label": "Yes"
+				}
+			]
+		}
+	]
+}

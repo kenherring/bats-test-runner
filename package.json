@@ -1,0 +1,143 @@
+{
+	"name": "bats-test-runner",
+	"displayName": "BATS Test Runner",
+	"description": "BATS Test Runner for VSCode",
+	"version": "0.0.1",
+	"preview": true,
+	"engineStrict": true,
+	"galleryBanner": {
+		"color": "#007ACC",
+		"theme": "dark"
+	},
+	"publisher": "kherring",
+	"pricing": "Free",
+	"private": true,
+	"icon": "resources/images/icon_128.png",
+	"author": "Ken Herring",
+	"qna": false,
+	"homepage": "https://github.com/kenherring/bats-test-runner/blob/main/README.md",
+	"repository": {
+		"url": "https://github.com/kenherring/bats-test-runner"
+	},
+	"bugs": {
+		"url": "https://github.com/kenherring/bats-test-runner/issues"
+	},
+	"license": "MIT",
+	"licenses": [
+		{
+			"type": "MIT",
+			"url": "https://github.com/kenherring/bats-test-runner/blob/main/LICENSE"
+		}
+	],
+	"badges": [
+		{
+			"href": "https://dl.circleci.com/status-badge/redirect/gh/kenherring/bats-test-runner/tree/main",
+			"url": "https://img.shields.io/circleci/build/github/kenherring/bats-test-runner/main?logo=circleci",
+			"description": "CircleCI Build Status"
+		},
+		{
+			"href": "https://sonarcloud.io/summary/new_code?id=kenherring_bats-test-runner",
+			"url": "https://sonarcloud.io/api/project_badges/measure?project=kenherring_bats-test-runner&metric=sqale_rating",
+			"description": "SonarCloud Maintainability Rating"
+		},
+		{
+			"href": "https://sonarcloud.io/summary/new_code?id=kenherring_bats-test-runner",
+			"url": "https://sonarcloud.io/api/project_badges/measure?project=kenherring_bats-test-runner&metric=coverage",
+			"description": "SonarCloud Coverage"
+		}
+	],
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"supported": false
+		}
+	},
+	"keywords": [
+		"bash",
+		"shell script",
+		"bats",
+		"bash test"
+	],
+	"engines": {
+		"vscode": "^1.96.0"
+	},
+	"categories": [
+		"Testing"
+	],
+	"activationEvents": [
+		"onStartupFinished",
+		"workspaceContains:{**/*.bats}"
+	],
+	"main": "./dist/extension.js",
+	"scripts": {
+		"build": "node esbuild.js",
+		"rebuild": "npm run clean && npm run build",
+		"clean": "sh -c scripts/npm_clean.sh",
+		"lint": "npx eslint ./{src,test}/**/*.ts",
+		"lint-fix-all": "npx eslint ./{src,test}/**/*.ts --fix",
+		"vscode:prepublish": "npm run package",
+		"package": "npm run build",
+		"pretest": "sh -c scripts/npm_pretest.sh",
+		"test": "sh -c scripts/npm_pretest.sh && vscode-test",
+		"test:coverage": "npm test -- --coverage",
+		"vscode-test": "vscode-test",
+		"version": "sh -c scripts/npm_version.sh",
+		"watch": "npm run build -- --watch"
+	},
+	"dependencies": {
+		"minimatch": "^10.0.1",
+		"node-json-minify": "^3.0.0",
+		"xml2js": "^0.6.2"
+	},
+	"devDependencies": {
+		"@eslint/eslintrc": "^3.2.0",
+		"@eslint/js": "^9.16.0",
+		"@stylistic/eslint-plugin": "^2.12.1",
+		"@swc-node/register": "^1.10.9",
+		"@types/eslint__eslintrc": "^2.1.2",
+		"@types/mocha": "^10.0.10",
+		"@types/node": "^20.X",
+		"@types/vscode": "^1.96.0",
+		"@types/xml2js": "^0.4.14",
+		"@typescript-eslint/eslint-plugin": "^8.18.0",
+		"@typescript-eslint/parser": "^8.18.0",
+		"@vscode/test-cli": "^0.0.10",
+		"@vscode/test-electron": "^2.4.1",
+		"@vscode/vsce": "^3.2.1",
+		"esbuild": "^0.24.0",
+		"eslint": "^9.16.0",
+		"eslint-formatter-unix": "^8.40.0",
+		"eslint-plugin-promise": "^7.2.1",
+		"mocha": "^11.0.1",
+		"mocha-multi-reporters": "^1.5.1",
+		"mocha-reporter-sonarqube": "2.1.1",
+		"ts-node": "^10.9.2",
+		"tsconfig-paths": "^4.2.0",
+		"typescript": "^5.7.2"
+	},
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "BATS Test Runner",
+			"properties": {
+				"bats.CONFIG_ITEM": {
+					"type": "boolean",
+					"default": true,
+					"markdownDescription": "TBD"
+				}
+			}
+		},
+		"languages": [
+			{
+				"id": "bats",
+				"aliases": [
+					"bash automated testing system"
+				],
+				"extensions": [
+					".bats"
+				]
+			}
+		],
+		"jsonValidation": [],
+		"snippets": []
+	}
+}

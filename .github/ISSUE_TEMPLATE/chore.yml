@@ -1,0 +1,15 @@
+name: 🧹 Chore
+description: Repo configuration, tooling, and other non-feature work.
+title: "🧹 [Chore] <title here>"
+labels: ["chore"]
+# projects: ["octo-org/1", "octo-org/44"]
+# assignees:
+#   - kenherring
+body:
+  - type: textarea
+    attributes:
+      label: Chore Description
+      value: |
+        Describe the chore...
+    validations:
+      required: true

@@ -1,0 +1,6 @@
+* text=auto
+*.png binary
+*.bats eol=lf
+*.sh eol=lf
+.shellcheckrc eol=lf
+.git-hooks/* eol=lf

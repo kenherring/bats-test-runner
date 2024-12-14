@@ -1,0 +1,14 @@
+## Ignore anything with 'test' in the name
+**test**
+
+## Keep these files
+!CHANGELOG.md
+!docs/coverage.png
+!LICENSE
+!dist/extension.js*
+!package.json
+!resources/images/icon_128.png
+!snippets/
+
+## Ignore everything else
+**/*

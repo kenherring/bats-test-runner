@@ -1,0 +1,15 @@
+name: "🌲 Feature Request"
+description: Request a feature or enhancement to existing functionality
+title: "🌲 [Request] <title here>"
+labels: ["request", "enhancement", "triage"]
+# projects: ["octo-org/1", "octo-org/44"]
+assignees:
+  - kherring
+body:
+  - type: textarea
+    attributes:
+      label: Feature Request
+      value: |
+        Describe your feature request...
+    validations:
+      required: true

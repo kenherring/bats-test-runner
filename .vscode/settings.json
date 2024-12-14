@@ -1,0 +1,60 @@
+{
+	// "eslint.lintTask.enable": true,
+	"eslint.codeActionsOnSave.mode": "problems",
+	// "extension-test-runner.extractSettings": {
+	// 	"suite": [ "suite" ],
+	// 	"test": [ "test" ],
+	// 	// "extractWith": "syntax",
+	// 	"extractWith": "evaluation",
+	// },
+	"git.branchProtection": [
+		"main"
+	],
+	"extension-test-runner.extractSettings": {
+		"suite": [
+			"describe",
+			"suite"
+		],
+		"test": [
+			"it",
+			"test"
+		],
+		"extractWith": "syntax"
+	},
+	"files.exclude": {
+		"./dist/**": true,
+		".worktrees/": true
+	},
+	"files.watcherExclude": {
+		".git/objects": true,
+		".git/subtree-cache": true,
+		".vscode-test": true,
+		"coverage": true,
+		"dist": true,
+		"out": true,
+		"node_modules": true
+	},
+	"npm.autoDetect": "on",
+	"redhat.telemetry.enabled": false,
+	"search.exclude": {
+		".vscode-test": true,
+		"coverage": true,
+		"dist": true,
+		"out": true,
+		"node_modules": true,
+		"dummy-ext/.vscode-test/**": true,
+	},
+	"shellcheck.useWorkspaceRootAsCwd": true,
+	"sonarlint.connectedMode.project": {
+		"connectionId": "sonarcloud-kenherring",
+		"projectKey": "kenherring_bats-test-runner"
+	},
+	"sonarlint.disableTelemetry": true,
+	"task.autoDetect": "on",
+	"typescript.preferences.quoteStyle": "single",
+    "typescript.validate.enable": true,
+    "circleci.filters.branchFilter": "allBranches",
+    "circleci.persistedProjectSelection": [
+		"gh/kenherring/bats-test-runner"
+	],
+}
