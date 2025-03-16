@@ -46,8 +46,6 @@ save_and_print_debug_output () {
 	mkdir -p artifacts
 	find . > artifacts/filelist.txt
 
-	find .vscode-test -name '*ABL*.log'
-	find .vscode-test -name '*ABL*.log' -exec cp {} artifacts \;
 	find .vscode-test -name 'settings.json'
 	find .vscode-test -name 'settings.json' -exec cp {} artifacts \;
 	local FROM_DIR TO_DIR

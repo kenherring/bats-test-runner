@@ -1,13 +1,9 @@
 {
 	"recommendations": [
-		"circleci.circleci",
 		"dbaeumer.vscode-eslint",
 		"github.vscode-pull-request-github",
-		"ms-vscode.extension-test-runner",
-		"redhat.vscode-xml",
-		"riversidesoftware.openedge-abl-lsp",
-		"sonarsource.sonarlint-vscode",
-		"timonwong.shellcheck",
 		"jetmartin.bats",
+		"ms-vscode.extension-test-runner",
+		"timonwong.shellcheck",
 	]
 }

@@ -7,9 +7,7 @@ initialize () {
 	CIRCLECI=${CIRCLECI:-false}
 	NO_BUILD=${NO_BUILD:-false}
 	VERBOSE=${VERBOSE:-false}
-	WSL=false
 	VERBOSE=${VERBOSE:-false}
-	[ -z "${WSL_DISTRO_NAME:-}" ] && WSL=true
 	PACKAGE_VERSION=$(node -p "require('./package.json').version")
 
 	while getopts 'hNoVv' OPT; do
@@ -49,54 +47,6 @@ get_performance_test_code () {
 		fi
 	fi
 	tar -xf "$TO_FILE" -C test_projects/proj7_load_performance/src
-}
-
-copy_user_settings () {
-	echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}]"
-
-	if [ -d .vscode-test ]; then
-		$VERBOSE && find .vscode-test -type f -name "*.log"
-		find .vscode-test -type f -name "*.log" -delete
-		if [ -d .vscode-test/user-data ]; then
-			$VERBOSE && find .vscode-test/user-data
-			find .vscode-test/user-data -delete
-		fi
-	fi
-
-	mkdir -p .vscode-test/user-data/User
-	cp test/resources/.vscode-test/user-data/User/argv.json .vscode-test/user-data/User/argv.json
-}
-
-get_pct () {
-	echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}] pwd=$(pwd)"
-	if $WSL && [ ! -f ~/.ant/lib/PCT.jar ]; then
-		mkdir -p ~/.ant/lib
-		local ARGS=()
-		ARGS+=(-L -o ~/.ant/lib/PCT.jar)
-		if $VERBOSE; then
-			ARGS+=(-v)
-		else
-			ARGS+=(-s)
-		fi
-		curl "${ARGS[@]}" https://github.com/Riverside-Software/pct/releases/download/v228/PCT.jar
-	fi
-}
-
-create_dbs () {
-	echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}] pwd=$(pwd)"
-	if [ -d test_projects/proj0/target/db ]; then
-		return 0
-	fi
-
-	local COMMAND=ant
-	cd test_projects/proj0
-	COMMAND=ant
-	if ! command -v $COMMAND; then
-		COMMAND="$DLC/ant/bin/ant"
-	fi
-	mkdir -p artifacts
-	$COMMAND > artifacts/pretest_ant.log >&1
-	cd -
 }
 
 package () {
@@ -145,10 +95,6 @@ package () {
 
 ########## MAIN BLOCK ##########
 initialize "$@"
-copy_user_settings
-get_performance_test_code
-get_pct
-create_dbs
 package
 rm -rf artifacts/*
 echo "[$(date +%Y-%m-%d:%H:%M:%S) $0] completed successfully!"
