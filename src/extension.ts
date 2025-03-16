@@ -191,20 +191,12 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 	}
 
 	log.info('extensionUri=' + extensionUri.fsPath)
-	// const cmd: ShellQuotedString = {
-	// 	value: Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin', 'bats').fsPath,
-	// 	quoting: ShellQuoting.Strong
-	// }
-	// const cmd = '\'' + Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin', 'bats').fsPath + '\''
 	const cmd = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin', 'bats').fsPath.replace(/\\/g, '/')
 	const args = [
 		cmd,
-		// '-r',
 		workspace.asRelativePath(item.uri),
 		'--formatter',
-		// 'tap',
 		'tap13',
-		// 'junit',
 		'--timing',
 		'--line-reference-format',
 		'colon',
@@ -217,12 +209,9 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 	const spawnOptions: SpawnOptions = {
 		cwd: workspace.getWorkspaceFolder(item.uri)?.uri.fsPath,
 		shell: true,
-		// stdio: 'pipe',
 		timeout: 10000,
-		// argv0: cmd,
 		env: { ...process.env },
-		// signal:
-		// cwd: workspace.workspaceFolders![0].uri.fsPath,
+		// signal: abort.signal,
 	}
 	log.info('spawnOptions=' + JSON.stringify(spawnOptions))
 
