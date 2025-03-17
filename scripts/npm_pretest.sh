@@ -3,7 +3,6 @@ set -eou pipefail
 
 initialize () {
 	echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}] pwd=$(pwd)"
-	PATH=$PATH:$DLC/ant/bin
 	CIRCLECI=${CIRCLECI:-false}
 	NO_BUILD=${NO_BUILD:-false}
 	VERBOSE=${VERBOSE:-false}
@@ -18,11 +17,6 @@ initialize () {
 				exit 1 ;;
 		esac
 	done
-
-	if [ -z "$DLC" ]; then
-		echo "ERROR: DLC environment variable is not set"
-		exit 1
-	fi
 
 	if [ -d artifacts ]; then
 		rm -rf artifacts/*
