@@ -17,6 +17,7 @@ import {
 } from 'vscode'
 import { log } from './ChannelLogger'
 import { spawn, SpawnOptions } from 'child_process'
+import { IBatsExport } from 'extensionExports'
 
 export function activate (context: ExtensionContext) {
 	const ctrl = tests.createTestController('batsTestController', 'BATS')
@@ -82,7 +83,7 @@ export function activate (context: ExtensionContext) {
 		})
 	}
 
-	ctrl.resolveHandler = (item) => {
+	ctrl.resolveHandler = (item): Thenable<void> => {
 		log.info('resolveHandler item.id=' + item?.id)
 		if (!item) {
 			return workspace.findFiles('**/*.bats').then((files) => {
@@ -120,6 +121,13 @@ export function activate (context: ExtensionContext) {
 	// await ctrl.refreshHandler(new CancellationTokenSource().token)
 
 	log.info('extension activated!')
+
+
+	const exports: IBatsExport = {
+		getTestCount: () => ctrl.items.size,
+		resolveTests: () => { return ctrl.resolveHandler!(undefined) },
+	}
+	return exports
 }
 
 function parseFileForTestCases (ctrl: TestController, item: TestItem) {
@@ -213,7 +221,6 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 		env: { ...process.env },
 		// signal: abort.signal,
 	}
-	log.info('spawnOptions=' + JSON.stringify(spawnOptions))
 
 	const prom = new Promise<void>((resolve, reject) => {
 		log.info('cmd: ' + args.join(' '))

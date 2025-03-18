@@ -69,9 +69,21 @@ function getMochaOpts (projName) {
 	return mochaOpts
 }
 
+function getExtensionVersion () {
+	const packageJson = path.resolve(__dirname, '..', 'package.json')
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const packageData = JSON.parse(fs.readFileSync(packageJson, 'utf8'))
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const version = packageData.version
+	if (!version) {
+		throw new Error('Version not found in package.json')
+	}
+	return version
+}
+
 function getLaunchArgs (projName) {
 	const args = []
-	// const extVersion = getExtensionVersion()
+	const extVersion = getExtensionVersion()
 
 	// --- start in directory --- //
 	// 'test_projects/' + projName, // workspaceFolder is set in the config
@@ -87,14 +99,14 @@ function getLaunchArgs (projName) {
 	// args.push('--profile <profileName>')
 	// args.push('--profile-temp') // create a temporary profile for the test run in lieu of cleaning up user data
 	// args.push('--help')
-	// args.push('--extensions-dir', '<dir>')
+	// args.push('--extensions-dir', '../')
 	// args.push('--list-extensions')
 	// args.push('--show-versions')
 	// args.push('--category', '<category>')
 	// args.push('--install-extension <ext-id>')
 
 	// if (vsVersion === 'insiders') {
-	// 	args.push('--install-extension', '../bats-test-runner-' + extVersion + '.vsix')
+	// args.push('--install-extension', '../bats-test-runner-' + extVersion + '.vsix')
 	// } else {
 	// 	args.push('--install-extension', './bats-test-runner-insiders-' + extVersion + '.vsix')
 	// }
