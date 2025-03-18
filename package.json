@@ -79,6 +79,7 @@
 		"lint-fix-all": "npx eslint ./{src,test}/**/*.ts --fix",
 		"vscode:prepublish": "npm run package",
 		"package": "npm run build",
+		"deploy": "vsce publish",
 		"pretest": "sh -c scripts/npm_pretest.sh",
 		"test": "sh -c scripts/npm_pretest.sh && vscode-test",
 		"test:coverage": "npm test -- --coverage",
