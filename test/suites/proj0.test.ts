@@ -16,31 +16,32 @@ export function sleep (time = 10, msg?: string | null) {
 
 suite('proj0  - Extension Test Suite', () => {
 
-	let ext
+	let ext: vscode.Extension<unknown>
 	let exports: IBatsExport
 
 	suiteSetup('proj0 - before', () => {
 		log.info('suiteSetup')
-		ext = vscode.extensions.getExtension('kherring.bats-test-runner')
-		if (!ext) {
+		const localExt = vscode.extensions.getExtension('kherring.bats-test-runner')
+		if (!localExt) {
 			log.error('Extension not found')
 			assert.fail('Extension not found')
 		}
+		ext = localExt
+		if (!ext.isActive) {
+			return sleep(250)
+		}
+	})
+
+	setup('proj0 - beforeEach', async () => {
+		log.info('beforeEach1')
 		if (!ext.isActive) {
 			log.error('Extension not active')
 			assert.fail('Extension not active')
 		}
 		exports = ext.exports as IBatsExport
 		if (exports.getTestCount() === 0) {
-			return sleep(250)
-		}
-	})
-
-	setup('proj0 - beforeEach', async () => {
-		log.info('beforeEach')
-		if (exports.getTestCount() === 0) {
-			await exports.resolveTests()
-			if (exports.getTestCount() === 0) {
+			const testCount = await exports.resolveTests()
+			if (testCount === 0) {
 				throw new Error('No tests found')
 			}
 		}
@@ -66,8 +67,6 @@ suite('proj0  - Extension Test Suite', () => {
 
 		await vscode.commands.executeCommand('testing.runAll')
 		log.info('proj0.1 - run all tests - done')
-		await sleep(10000)
-		log.info('success')
 	})
 
 })

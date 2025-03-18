@@ -125,7 +125,12 @@ export function activate (context: ExtensionContext) {
 
 	const exports: IBatsExport = {
 		getTestCount: () => ctrl.items.size,
-		resolveTests: () => { return ctrl.resolveHandler!(undefined) },
+		resolveTests: async () => {
+			log.info('100')
+			await ctrl.resolveHandler!(undefined)
+			log.info('101')
+			return ctrl.items.size
+		},
 	}
 	return exports
 }
