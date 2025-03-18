@@ -18,6 +18,8 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - name: Install Node.js
       uses: actions/setup-node@v4
       with:
@@ -27,6 +29,10 @@ jobs:
       if: runner.os == 'Linux'
     - run: npm test
       if: runner.os != 'Linux'
+    - name: SonarQube Scan
+      uses: SonarSource/sonarqube-scan-action@v5
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     - name: Publish
       if: success() && startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
       run: npm run deploy
