@@ -1,0 +1,43 @@
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        ## https://community.sonarsource.com/t/my-first-analyses-has-failed-when-added-project-analysis-id-38152260-0ab1-4a18-846f-1f2371079b5f/134798/27
+        # os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+    - run: npm install
+    - run: xvfb-run -a npm test
+      if: runner.os == 'Linux'
+    - run: npm run test:coverage
+      if: runner.os != 'Linux'
+    - name: SonarQube Scan
+      if: matrix.os == 'ubuntu-latest'
+      uses: SonarSource/sonarqube-scan-action@v5
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: Publish
+      if: success() && startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
+      run: npm run deploy
+      env:
+        VSCE_PAT: ${{ secrets.VSCE_PAT }}

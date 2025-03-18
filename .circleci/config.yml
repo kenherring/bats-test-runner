@@ -32,7 +32,6 @@ oe-version-param: &oe-version-param
 context-and-filters: &context-and-filters
   context:
     - DockerHub
-    - PROGRESS_CFG
     - SonarCloud
   filters:
     tags: ## all tags

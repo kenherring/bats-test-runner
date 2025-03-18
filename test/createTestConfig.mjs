@@ -14,43 +14,15 @@ import process from 'process'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const vsVersionNum = '1.88.0'
-const useOEAblPrerelease = false
-const enableExtensions = [
-	'AtStart',
-	'DebugLines',
-	'proj2',
-	'proj3',
-	'proj4',
-	'proj5',
-	'proj7A',
-	'proj7B',
-	'proj8',
-	'proj9',
-]
 
 function writeConfigToFile (name, config) {
 	fs.writeFileSync('.vscode-test.' + name + '.bk.json', JSON.stringify(config, null, 4).replace('    ', '\t'))
 }
 
-let isFirst = true
 function getMochaTimeout (projName) {
-	// if (enableExtensions.includes(projName)) {
-	if(isFirst) {
-		isFirst = false
-		return 120000
-	}
-
-
 	switch (projName) {
-		case 'DebugLines': return 120000 // install openedge-abl-lsp for the first time, so give it a moment to start
 		case 'proj1': return 30000
-		// case 'proj2': return 20000
-		case 'proj5': return 60000
-		case 'proj8': return 45000
-		case 'proj7A': return 120000
-		case 'proj7B': return 120000
 	}
-
 	return 30000
 }
 
@@ -97,9 +69,21 @@ function getMochaOpts (projName) {
 	return mochaOpts
 }
 
+function getExtensionVersion () {
+	const packageJson = path.resolve(__dirname, '..', 'package.json')
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const packageData = JSON.parse(fs.readFileSync(packageJson, 'utf8'))
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const version = packageData.version
+	if (!version) {
+		throw new Error('Version not found in package.json')
+	}
+	return version
+}
+
 function getLaunchArgs (projName) {
 	const args = []
-	// const extVersion = getExtensionVersion()
+	const extVersion = getExtensionVersion()
 
 	// --- start in directory --- //
 	// 'test_projects/' + projName, // workspaceFolder is set in the config
@@ -115,24 +99,17 @@ function getLaunchArgs (projName) {
 	// args.push('--profile <profileName>')
 	// args.push('--profile-temp') // create a temporary profile for the test run in lieu of cleaning up user data
 	// args.push('--help')
-	// args.push('--extensions-dir', '<dir>')
+	// args.push('--extensions-dir', '../')
 	// args.push('--list-extensions')
 	// args.push('--show-versions')
 	// args.push('--category', '<category>')
 	// args.push('--install-extension <ext-id>')
 
 	// if (vsVersion === 'insiders') {
-	// 	args.push('--install-extension', '../bats-test-runner-' + extVersion + '.vsix')
+	// args.push('--install-extension', '../bats-test-runner-' + extVersion + '.vsix')
 	// } else {
 	// 	args.push('--install-extension', './bats-test-runner-insiders-' + extVersion + '.vsix')
 	// }
-	if (enableExtensions.includes(projName)) {
-		if (useOEAblPrerelease) {
-			args.push('--install-extension', 'riversidesoftware.openedge-abl-lsp@prerelease')
-		} else {
-			args.push('--install-extension', 'riversidesoftware.openedge-abl-lsp')
-		}
-	}
 	// args.push('--pre-release')
 	// args.push('--uninstall-extension <ext-id>')
 	// args.push('--update-extensions')
@@ -157,9 +134,7 @@ function getLaunchArgs (projName) {
 	// args.push('--status')
 	// args.push('--prof-startup')
 	// args.push('--disable-extension <ext-id>')
-	if (!enableExtensions.includes(projName)) {
-		args.push('--disable-extensions')
-	}
+	args.push('--disable-extensions')
 	args.push('--disable-extension', 'vscode.builtin-notebook-renderers')
 	args.push('--disable-extension', 'vscode.emmet')
 	args.push('--disable-extension', 'vscode.git')
@@ -235,8 +210,6 @@ function getTestConfig (testDir, projName) {
 		useInstallation,
 		// useInstallation: { fromMachine: true },
 		// download: { reporter: ProgressReporter, timeout: ? }
-		installExtensions: [ 'riversidesoftware.openedge-abl-lsp' ],
-		// installExtensions: [ 'riversidesoftware.openedge-abl-lsp@prerelease' ],
 
 		// --- IBaseTestConfiguration --- //
 		files: absolulteFile,
