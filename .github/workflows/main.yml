@@ -32,6 +32,7 @@ jobs:
     - run: npm test
       if: runner.os != 'Linux'
     - name: SonarQube Scan
+      if: matrix.os == 'ubuntu-latest'
       uses: SonarSource/sonarqube-scan-action@v5
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
