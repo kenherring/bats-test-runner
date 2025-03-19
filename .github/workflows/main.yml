@@ -27,7 +27,8 @@ jobs:
       with:
         node-version: 18.x
     - run: npm install
-    - run: xvfb-run -a npm test
+    - run: npm run lint -- -f json -o artifacts/eslint_report.json
+    - run: xvfb-run -a npm test:coverage
       if: runner.os == 'Linux'
     - run: npm run test:coverage
       if: runner.os != 'Linux'
