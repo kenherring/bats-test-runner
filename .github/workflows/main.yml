@@ -35,7 +35,7 @@ jobs:
         pwd && ls -al
         cd coverage
         ls -al
-        cd artifacts
+        cd ../artifacts
         ls -al
     - name: SonarQube Scan
       if: matrix.os == 'ubuntu-latest'
