@@ -1,3 +1,9 @@
+# [0.0.3-3](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.3-3) - 2025-03-19 (pre-release)
+
+ * Initial development (#1)
+
+**Full Changelog**: [0.0.1...0.0.3-3](https://github.com/kenherring/bats-test-runner/compare/0.0.1...0.0.3-3)
+
 # [0.0.3-2](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.3-2) - 2025-03-19 (pre-release)
 
  * Initial development (#1)
