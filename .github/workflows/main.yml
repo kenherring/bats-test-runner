@@ -31,12 +31,6 @@ jobs:
       if: runner.os == 'Linux'
     - run: npm run test:coverage
       if: runner.os != 'Linux'
-    - run: |
-        pwd && ls -al
-        cd coverage
-        ls -al
-        cd ../artifacts
-        ls -al
     - name: SonarQube Scan
       if: matrix.os == 'ubuntu-latest'
       uses: SonarSource/sonarqube-scan-action@v5
