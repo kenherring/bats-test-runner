@@ -30,7 +30,7 @@ jobs:
       if: runner.os == 'Linux'
     - run: npm run test:coverage
       if: runner.os != 'Linux'
-    - run: npm run lint -f json -o artifacts/eslint_report.json
+    - run: npm run lint -- -f json -o artifacts/eslint_report.json
     - run: cat artifacts/eslint_report.json
     - run: cat coverage/lcov.info
     - name: SonarQube Scan
