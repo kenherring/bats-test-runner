@@ -80,10 +80,6 @@ update_other_files () {
 	echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}] updating sonar-project.properties..."
 	sed -i "s/sonar.projectVersion=.*/sonar.projectVersion=$PACKAGE_VERSION/" sonar-project.properties
 
-	## TODO
-	echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}] updating src/version.ts..."
-	echo "export const LIB_VERSION = '$PACKAGE_VERSION'" > src/version.ts
-
 	echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}] updating .vscode/launch.json..."
 	sed -i "s/bats-test-runner-.*.vsix/bats-test-runner-$PACKAGE_VERSION.vsix/" .vscode/launch.json
 }
