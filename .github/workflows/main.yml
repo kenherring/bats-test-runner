@@ -37,6 +37,14 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     - name: Publish
       if: success() && startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
-      run: npm run deploy
       env:
+        GH_REF: ${{ github.ref }}
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      run: |
+        npm run deploy
+        echo "github.ref_name: ${{ github.ref_name }}"
+        echo "GH_REF=${{ github.ref_name }}"
+        echo "GH_REF2=${GH_REF//refs\/tags\//}"
+        echo "GH_REF3=${GH_REF//refs\/tags\/}"
+        gh release upload ${GH_REF//refs\/tags\/}" bats-test-runner-*.vsix
+        gh release upload ${{ github.ref_name }} bats-test-runner-*.vsix
