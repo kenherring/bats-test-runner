@@ -70,8 +70,7 @@
 	"main": "./dist/extension.js",
 	"scripts": {
 		"build": "node esbuild.js",
-		"rebuild": "npm run clean && npm run build",
-		"clean": "sh -c scripts/npm_clean.sh",
+		"rebuild": "rm -r dist && npm run build",
 		"lint": "npx eslint ./{src,test}/**/*.ts",
 		"lint-fix-all": "npx eslint ./{src,test}/**/*.ts --fix",
 		"package": "vsce package",

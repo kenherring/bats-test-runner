@@ -19,7 +19,7 @@ initialize () {
 	done
 
 	if [ -d artifacts ]; then
-		rm -rf artifacts/*
+		rm -rf artifacts/* coverage/*
 	fi
 
 	if [ ! -d node_modules ]; then

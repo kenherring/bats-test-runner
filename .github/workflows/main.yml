@@ -26,11 +26,13 @@ jobs:
         node-version: 20.x
     - run: npm install
     - run: npm run build
-    - run: npm run lint -- -f json -o artifacts/eslint_report.json
     - run: xvfb-run -a npm run test:coverage
       if: runner.os == 'Linux'
     - run: npm run test:coverage
       if: runner.os != 'Linux'
+    - run: npm run lint -f json -o artifacts/eslint_report.json
+    - run: cat artifacts/eslint_report.json
+    - run: cat coverage/lcov.info
     - name: SonarQube Scan
       if: matrix.os == 'ubuntu-latest'
       uses: SonarSource/sonarqube-scan-action@v5
@@ -44,10 +46,5 @@ jobs:
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
       run: |
         npm run package
-        echo "github.ref_name: ${{ github.ref_name }}"
-        echo "GH_REF=${{ github.ref_name }}"
-        echo "GH_REF2=${GH_REF//refs\/tags\//}"
-        echo "GH_REF3=${GH_REF//refs\/tags\/}"
         gh release upload "${GH_REF//refs\/tags\/}" bats-test-runner-*.vsix
-        gh release upload "${{ github.ref_name }}"" bats-test-runner-*.vsix
         npm run deploy

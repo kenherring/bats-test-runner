@@ -7,7 +7,6 @@
 			"label": "folderOpen",
 			"hide": true,
 			"dependsOn": [
-				"npm clean",
 				"npm pretest",
 				"npm watch",
 			],
@@ -19,18 +18,6 @@
 			},
 			"runOptions": {
 				"runOn": "folderOpen"
-			}
-		},
-		{
-			"label": "npm clean",
-			"hide": true,
-			"type": "npm",
-			"script": "clean",
-			"isBackground": true,
-			"presentation": {
-				"reveal": "silent",
-				"focus": false,
-				"group": "build-task",
 			}
 		},
 		{
