@@ -28,7 +28,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}/dummy-ext",
-				"--install-extension=bats-test-runner-0.0.3-1.vsix",
+				"--install-extension=bats-test-runner-0.0.3-2.vsix",
 				"--enable-proposed-api=kherring.bats-test-runner",
 				"${workspaceFolder}/test_projects/${input:workspaceName}"
 			]
