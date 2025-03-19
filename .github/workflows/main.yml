@@ -47,6 +47,6 @@ jobs:
         echo "GH_REF=${{ github.ref_name }}"
         echo "GH_REF2=${GH_REF//refs\/tags\//}"
         echo "GH_REF3=${GH_REF//refs\/tags\/}"
-        gh release upload ${GH_REF//refs\/tags\/}" bats-test-runner-*.vsix
-        gh release upload ${{ github.ref_name }} bats-test-runner-*.vsix
+        gh release upload "${GH_REF//refs\/tags\/}" bats-test-runner-*.vsix
+        gh release upload "${{ github.ref_name }}"" bats-test-runner-*.vsix
         npm run deploy
