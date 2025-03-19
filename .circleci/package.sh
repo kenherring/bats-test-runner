@@ -26,12 +26,6 @@ initialize () {
     rm -f ./*.vsix
 }
 
-package () {
-    echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}]"
-    package_version stable
-    # package_version insiders
-}
-
 package_version () {
     local VSCODE_VERSION=$1
     echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}] PACKAGE_VERSION=$VSCODE_VERSION"
@@ -64,29 +58,19 @@ run_lint () {
 		return 0
 	fi
 
-	local ESLINT_FILE=artifacts/eslint_report
 	mkdir -p artifacts
 
-	if ! npm run lint -- -f unix -o "${ESLINT_FILE}.txt"; then
-		echo "eslint plain failed"
-	fi
-	if ! npm run lint -- -f json -o "${ESLINT_FILE}.json"; then
-		## sonarqube report
+	if ! npm run lint -- -f json -o "artifacts/eslint_report.json"; then
 		echo "eslint json failed"
 	fi
 
-    # sed -i 's|/home/circleci/project/|/root/project/|g' "${ESLINT_FILE}.json"
-	if [ "$(find artifacts -name "eslint_report.json" | wc -l)" != "0" ]; then
-		jq '.' < "${ESLINT_FILE}.json" > "${ESLINT_FILE}_pretty.json"
-	else
-		echo "ERROR: ${ESLINT_FILE}.json not found"
-		exit 1
-	fi
+	jq '.' < "artifacts/eslint_report.json" > "artifacts/eslint_report_pretty.json"
 	echo 'eslint successful'
 }
 
 ########## MAIN BLOCK ##########
 initialize
-package
+package_version stable
 run_lint
+ls -al artifacts/eslint_report.json
 echo "[$(date +%Y-%m-%d:%H:%M:%S) $0] completed successfully"

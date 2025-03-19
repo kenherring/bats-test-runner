@@ -2,7 +2,7 @@
 	"name": "bats-test-runner",
 	"displayName": "BATS Test Runner",
 	"description": "BATS Test Runner for VSCode",
-	"version": "0.0.2",
+	"version": "0.0.4",
 	"preview": true,
 	"engineStrict": true,
 	"galleryBanner": {
@@ -63,22 +63,17 @@
 	"categories": [
 		"Testing"
 	],
-	"activationEvents-2": [
+	"activationEvents": [
 		"onStartupFinished",
 		"workspaceContains:{**/*.bats}"
-	],
-	"activationEvents": [
-		"onStartupFinished"
 	],
 	"main": "./dist/extension.js",
 	"scripts": {
 		"build": "node esbuild.js",
-		"rebuild": "npm run clean && npm run build",
-		"clean": "sh -c scripts/npm_clean.sh",
+		"rebuild": "rm -r dist && npm run build",
 		"lint": "npx eslint ./{src,test}/**/*.ts",
 		"lint-fix-all": "npx eslint ./{src,test}/**/*.ts --fix",
-		"vscode:prepublish": "npm run package",
-		"package": "npm run build",
+		"package": "vsce package",
 		"deploy": "vsce publish",
 		"pretest": "sh -c scripts/npm_pretest.sh",
 		"test": "sh -c scripts/npm_pretest.sh && vscode-test",

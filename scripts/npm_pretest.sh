@@ -7,7 +7,6 @@ initialize () {
 	NO_BUILD=${NO_BUILD:-false}
 	VERBOSE=${VERBOSE:-false}
 	VERBOSE=${VERBOSE:-false}
-	PACKAGE_VERSION=$(node -p "require('./package.json').version")
 
 	while getopts 'hNoVv' OPT; do
 		case "$OPT" in
@@ -19,7 +18,7 @@ initialize () {
 	done
 
 	if [ -d artifacts ]; then
-		rm -rf artifacts/*
+		rm -rf artifacts/* coverage/*
 	fi
 
 	if [ ! -d node_modules ]; then

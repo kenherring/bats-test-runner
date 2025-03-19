@@ -52,7 +52,7 @@ function getMochaOpts (projName) {
 		],
 	}
 
-	if (process.env['BATS_TEST_RUNNER_RUN_SCRIPT_FLAG']) {
+	if (!process.env['VSCODE_PID']) {
 		mochaOpts.reporter = 'mocha-multi-reporters'
 		mochaOpts.reporterOptions = {
 			reporterEnabled: [ 'json-stream', 'spec', 'xunit', 'mocha-reporter-sonarqube' ],
