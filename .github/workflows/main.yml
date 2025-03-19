@@ -30,6 +30,12 @@ jobs:
       if: runner.os == 'Linux'
     - run: npm run test:coverage
       if: runner.os != 'Linux'
+    - run: |
+        pwd && ls -al
+        cd coverage
+        ls -al
+        cd artifacts
+        ls -al
     - name: SonarQube Scan
       if: matrix.os == 'ubuntu-latest'
       uses: SonarSource/sonarqube-scan-action@v5
@@ -41,10 +47,11 @@ jobs:
         GH_REF: ${{ github.ref }}
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
       run: |
-        npm run deploy
+        npm run package
         echo "github.ref_name: ${{ github.ref_name }}"
         echo "GH_REF=${{ github.ref_name }}"
         echo "GH_REF2=${GH_REF//refs\/tags\//}"
         echo "GH_REF3=${GH_REF//refs\/tags\/}"
         gh release upload ${GH_REF//refs\/tags\/}" bats-test-runner-*.vsix
         gh release upload ${{ github.ref_name }} bats-test-runner-*.vsix
+        npm run deploy

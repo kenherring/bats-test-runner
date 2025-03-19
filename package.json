@@ -63,12 +63,9 @@
 	"categories": [
 		"Testing"
 	],
-	"activationEvents-2": [
+	"activationEvents": [
 		"onStartupFinished",
 		"workspaceContains:{**/*.bats}"
-	],
-	"activationEvents": [
-		"onStartupFinished"
 	],
 	"main": "./dist/extension.js",
 	"scripts": {
@@ -77,8 +74,7 @@
 		"clean": "sh -c scripts/npm_clean.sh",
 		"lint": "npx eslint ./{src,test}/**/*.ts",
 		"lint-fix-all": "npx eslint ./{src,test}/**/*.ts --fix",
-		"vscode:prepublish": "npm run package",
-		"package": "npm run build",
+		"package": "vsce package",
 		"deploy": "vsce publish",
 		"pretest": "sh -c scripts/npm_pretest.sh",
 		"test": "sh -c scripts/npm_pretest.sh && vscode-test",
