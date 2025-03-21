@@ -1,3 +1,9 @@
+# [0.0.5-2](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-2) - 2025-03-21 (pre-release)
+
+
+
+**Full Changelog**: [0.0.4...0.0.5-2](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5-2)
+
 # [0.0.5-1](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-1) - 2025-03-21 (pre-release)
 
 
