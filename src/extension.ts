@@ -206,7 +206,7 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 	log.info('extensionUri=' + extensionUri.fsPath)
 	const cmd = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin', 'bats').fsPath.replace(/\\/g, '/')
 	const args = [
-		cmd,
+		// cmd,
 		workspace.asRelativePath(item.uri),
 		'--formatter',
 		'tap13',
@@ -230,7 +230,7 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 	const prom = new Promise<void>((resolve, reject) => {
 		log.info('cmd: ' + args.join(' '))
 		run.appendOutput('cmd: ' + args.join(' ') + '\r\n', undefined, item)
-		const proc = spawn('sh', args, spawnOptions)
+		const proc = spawn(cmd, args, spawnOptions)
 
 		const lines: string[] = []
 		proc.stdout?.on('data', (data: Buffer) => {
