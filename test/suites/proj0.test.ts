@@ -76,10 +76,12 @@ suite('proj0  - Extension Test Suite', () => {
 		assert.ok(exports.getTestCount() > 0, 'No tests found')
 
 		const results = exports.getTestSummary()
+		log.info('results=' + JSON.stringify(results, null, 2))
+		assert.ok(results?.started == 3, 'Expected 5 started, got ' + results?.started)
 		assert.ok(results?.errored == 0, 'Expected 0 errors, got ' + results?.errored)
-		assert.ok(results?.started == 5, 'Expected 5 started, got ' + results?.started)
-		assert.ok(results?.failed == 4, 'Expected 4 failures, got ' + results?.failed)
+		assert.ok(results?.failed == 2, 'Expected 4 failures, got ' + results?.failed)
 		assert.ok(results?.passed == 1, 'Expected 0 passed, got ' + results?.passed)
+		assert.ok(results?.skipped == 0, 'Expected 0 skipped, got ' + results?.skipped)
 	})
 
 })

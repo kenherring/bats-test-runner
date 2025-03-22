@@ -348,15 +348,19 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 			log.info('[message]: ' + message, run, currentTest)
 		}).on('error', (e: Error) => {
 			log.error('[error]: ' + e, run, currentTest)
-			testSummary.errored++
-			run.errored(item, new TestMessage(e.message))
+			testSummary.failed++
+			run.failed(item, new TestMessage(e.message))
 			reject(e)
 		}).on('close', (code: number) => {
 			log.info('spawn close: ' + code)
 			processOutput(run, currentTest, msgs)
 			if (code !== 0) {
 				testSummary.failed++
-				reject(new Error('failed with code ' + code))
+				if (code === 1) {
+					resolve()
+				} else {
+					reject(new Error('failed with code ' + code))
+				}
 			} else {
 				testSummary.passed++
 				run.passed(item, 0)
