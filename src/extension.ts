@@ -205,7 +205,7 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 
 	log.info('extensionUri=' + extensionUri.fsPath)
 	// const dir = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin', 'bats').fsPath.replace(/\\/g, '/')
-	const batsPath = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'libexec', 'bats-core').fsPath
+	const batsPath = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'libexec', 'bats-core', 'bats').fsPath
 	// const batsPath = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin').fsPath.replace(/\\/g, '/')
 	const args = [
 		// cmd,
@@ -222,8 +222,9 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 	}
 
 	const envs = { ...process.env}
-	envs['PATH'] = envs['PATH'] + ':' + batsPath
-	log.info('PATH=' + envs['PATH'])
+	log.info('envs=' + JSON.stringify(envs, null, 2))
+	// envs['PATH'] = envs['PATH'] + ':' + batsPath
+	// log.info('PATH=' + envs['PATH'])
 
 	const spawnOptions: SpawnOptions = {
 		cwd: workspace.getWorkspaceFolder(item.uri)?.uri.fsPath,
@@ -236,8 +237,10 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 
 	const prom = new Promise<void>((resolve, reject) => {
 		log.info('cmd: ' + args.join(' '))
-		run.appendOutput('cmd: bats ' + args.join(' ') + '\r\n', undefined, item)
-		const proc = spawn('bats', args, spawnOptions)
+		run.appendOutput('cmd: ' + batsPath + ' ' + args.join(' ') + '\r\n', undefined, item)
+		const proc = spawn(batsPath, args, spawnOptions)
+		run.appendOutput('proc=' + JSON.stringify(proc, null, 2))
+		// const proc = spawn('\'' + batsPath + '\'', args, spawnOptions)
 
 		const lines: string[] = []
 		proc.stdout?.on('data', (data: Buffer) => {
