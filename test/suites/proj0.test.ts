@@ -45,7 +45,6 @@ suite('proj0  - Extension Test Suite', () => {
 				throw new Error('No tests found')
 			}
 		}
-
 	})
 
 	teardown('proj0 - afterEach', () => {
@@ -65,8 +64,24 @@ suite('proj0  - Extension Test Suite', () => {
 
 		log.info('ext.exports=' + JSON.stringify(exports))
 
-		await vscode.commands.executeCommand('testing.runAll')
-		log.info('proj0.1 - run all tests - done')
+		await vscode.commands.executeCommand('testing.runAll').then(() => {
+			log.info('proj0.1 - run all tests - done')
+			return
+		}, (e: unknown) => {
+			log.error('proj0.1 - run all tests - error: ' + e)
+			assert.fail('proj0.1 - run all tests - error: ' + e)
+		})
+
+		log.info('exports.getTestCount()=' + exports.getTestCount())
+		assert.ok(exports.getTestCount() > 0, 'No tests found')
+
+		const results = exports.getTestSummary()
+		log.info('results=' + JSON.stringify(results, null, 2))
+		assert.ok(results?.started == 3, 'Expected 5 started, got ' + results?.started)
+		assert.ok(results?.errored == 0, 'Expected 0 errors, got ' + results?.errored)
+		assert.ok(results?.failed == 2, 'Expected 4 failures, got ' + results?.failed)
+		assert.ok(results?.passed == 1, 'Expected 0 passed, got ' + results?.passed)
+		assert.ok(results?.skipped == 0, 'Expected 0 skipped, got ' + results?.skipped)
 	})
 
 })

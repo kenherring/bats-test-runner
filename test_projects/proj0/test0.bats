@@ -22,8 +22,14 @@
 }
 
 @test "addition using dc fail" {
+
   result="$(echo 3 3+p | dc)"
   [ "$result" -eq 4 ]
+}
+
+@test "regular addition fail" {
+  result=$((3+4))
+  [ "$result" -eq 6 ]
 }
 
 @test "one line" { result="$(echo 2+2 | bc)"; [ "$result" -eq 4 ]; }

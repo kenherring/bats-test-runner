@@ -6,6 +6,7 @@
 !docs/coverage.png
 !LICENSE
 !dist/extension.js*
+!node_modules/bats/
 !package.json
 !resources/images/icon_128.png
 !snippets/

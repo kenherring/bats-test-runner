@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { LogLevel, TestRun, window } from 'vscode'
+import { LogLevel, TestItem, TestRun, window } from 'vscode'
 import path from 'path'
 
 enum NotificationType {
@@ -56,23 +56,23 @@ class Logger {
 		this.testResultsTimestamp = e
 	}
 
-	trace (message: string, testRun?: TestRun, stackTrace = true) {
-		this.writeMessage(LogLevel.Trace, message, testRun, stackTrace)
+	trace (message: string, testRun?: TestRun, testItem?: TestItem, stackTrace = true) {
+		this.writeMessage(LogLevel.Trace, message, testRun, testItem, stackTrace)
 	}
 
-	debug (message: string, testRun?: TestRun) {
-		this.writeMessage(LogLevel.Debug, message, testRun)
+	debug (message: string, testRun?: TestRun, testItem?: TestItem) {
+		this.writeMessage(LogLevel.Debug, message, testRun, testItem)
 	}
 
-	info (message: string, testRun?: TestRun) {
-		this.writeMessage(LogLevel.Info, message, testRun)
+	info (message: string, testRun?: TestRun, testItem?: TestItem) {
+		this.writeMessage(LogLevel.Info, message, testRun, testItem)
 	}
 
-	warn (message: string, testRun?: TestRun) {
-		this.writeMessage(LogLevel.Warning, message, testRun)
+	warn (message: string, testRun?: TestRun, testItem?: TestItem) {
+		this.writeMessage(LogLevel.Warning, message, testRun, testItem)
 	}
 
-	error (message: string | Error, testRun?: TestRun) {
+	error (message: string | Error, testRun?: TestRun, testItem?: TestItem) {
 		if (message instanceof Error) {
 			if (message.stack) {
 				message = '[' + message.name + '] ' +  message.message + '\r\r' + message.stack
@@ -80,7 +80,7 @@ class Logger {
 				message = '[' + message.name + '] ' +  message.message
 			}
 		}
-		this.writeMessage(LogLevel.Error, message, testRun)
+		this.writeMessage(LogLevel.Error, message, testRun, testItem)
 	}
 
 	notification (message: string, notificationType: NotificationType = NotificationType.Info) {
@@ -121,7 +121,7 @@ class Logger {
 		return window.showErrorMessage(message)
 	}
 
-	private writeMessage (messageLevel: LogLevel, message: string, testRun?: TestRun, includeStack = false) {
+	private writeMessage (messageLevel: LogLevel, message: string, testRun?: TestRun, testItem?: TestItem, includeStack = false) {
 		const datetime = new Date().toISOString()
 		this.writeToChannel(messageLevel, message, includeStack)
 
