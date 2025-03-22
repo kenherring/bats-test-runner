@@ -132,9 +132,7 @@ export function activate (context: ExtensionContext) {
 	const exports: IBatsExport = {
 		getTestCount: () => ctrl.items.size,
 		resolveTests: async () => {
-			log.info('100')
 			await ctrl.resolveHandler!(undefined)
-			log.info('101')
 			return ctrl.items.size
 		},
 		getTestSummary: () => testSummary
@@ -248,18 +246,10 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 	}
 
 	log.info('extensionUri=' + extensionUri.fsPath)
-	// const dir = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin', 'bats').fsPath.replace(/\\/g, '/')
 	const batsPath = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin').fsPath
-	const batsRelativePath = path.relative(__dirname, batsPath)
-	// log.info('batsPath=' + batsPath)
-	// log.info('batsRelativePath=' + batsRelativePath)
-	// const batsPath = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'libexec', 'bats-core', 'bats').fsPath
-	// const batsPath = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin').fsPath.replace(/\\/g, '/')
+	// const batsRelativePath = path.relative(__dirname, batsPath)
 	const shell = 'bash'
 	const cmd = 'bats'
-	// const args = [
-	// 	'PATH=$PATH',
-	// ]
 	const args = [
 		workspace.asRelativePath(item.uri),
 		'--formatter',
@@ -275,28 +265,21 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 	}
 
 	const envs = process.env
-	// log.info('PATH=' + JSON.stringify(process.env['PATH'], null, 2), run)
 	let separator = ':'
 	if (process.platform === 'win32') {
 		separator = ';'
 	}
-	log.info('envs[PATH].1=' + envs['PATH'])
 	for (const k in envs) {
 		if (k.toLowerCase() === 'path') {
-			log.info('envs[' + k + ']=' + envs[k])
 			envs[k] = envs[k] + separator + batsPath
 		}
 	}
-	log.info('envs[PATH].2=' + envs['PATH'])
 
 	const spawnOptions: SpawnOptions = {
 		cwd: workspace.getWorkspaceFolder(item.uri)?.uri.fsPath,
 		shell: shell,
-		// argv0: '',
-		// argv0: cmd,
 		timeout: 10000,
 		env: envs,
-
 		// signal: abort.signal,
 	}
 
@@ -319,21 +302,18 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 			const lines = data.toString().trim().replace(/\r/g, '').split('\n')
 
 			let status = ''
-			let testNum = -1
+			// let testNum = -1
 			let testName = ''
 			let duration = -1
 
 			// Example: not ok 1 addition using bc in 0sec
-			const countRegex = /^(\d+)..(\d+)$/
 			const okRegex = /^(ok|not ok) (\d+) (.*) in (\d+)sec$/
-			const locationRegex = /^# \(in test file (.*.bats), line (\d+)\)$/
-			const errorRegex = /^# (.*): line (\d+): (.*)$/
 
 			for (const line of lines) {
 				const okMatch = okRegex.exec(line)
 				if (okMatch) {
 					status = okMatch[1]
-					testNum = Number(okMatch[2])
+					// testNum = Number(okMatch[2])
 					testName = okMatch[3]
 					duration = Number(okMatch[4])
 
@@ -391,7 +371,6 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 }
 
 function processOutput (run: TestRun, currentTest: TestItem, msgs: string[]) {
-	run.appendOutput('----- processOutput msgs.length=' + msgs.length + ' -----\r\n')
 
 	const locationRegex1 = /file (.*\.bats), line (\d+)/
 	const locationRegex2 = /^(# )(.*)(: line )(\d+)(: )(.*)$/
@@ -416,89 +395,14 @@ function processOutput (run: TestRun, currentTest: TestItem, msgs: string[]) {
 			loc = new Location(currentTest.uri!, new Position(Number(locationMatch1[2]) - 1, 0))
 		}
 		if (locationMatch2) {
-			run.appendOutput('---- location match=' + JSON.stringify(locationMatch2) + ' -----\r\n')
-			run.appendOutput('     locationMatch[2]=' + locationMatch2[2] + '\r\n')
 			const workspaceUri = workspace.getWorkspaceFolder(currentTest.uri!)?.uri
-			// run.appendOutput('      uri=' + uri?.fsPath + '\r\n')
-			// run.appendOutput('      uri=' + JSON.stringify(uri) + '\r\n')
-			// if (uri) {
-			// 	uri = Uri.joinPath(currentTest.uri!, '..', '..', locationMatch2[2].replace(/\\/g, '/'))
-			// 	// run.appendOutput('      uri=' + uri.fsPath + '\r\n')
-			// 	run.appendOutput('      uri=' + JSON.stringify(uri) + '\r\n')
-			// } else {
-			// 	uri = currentTest.uri!
-			// }
-
-			const uriA = Uri.joinPath(currentTest.uri!, '..', '..', 'test0.bats') // WORKS
-			const uriB = Uri.joinPath(workspaceUri!, 'src\\test0.sh')
-			// const uriC = Uri.joinPath(workspaceUri!, 'test0.sh')
-			const uriC = Uri.joinPath(workspaceUri!, 'src\\anotherFile.sh')
-			// const uriC = Uri.joinPath(workspaceUri!, locationMatch2[2])
-
-			// eslint-disable-next-line promise/catch-or-return
-			workspace.fs.stat(uriB).then((stat) => {
-				run.appendOutput('----- uriB stat=' + JSON.stringify(stat) + ' ------ \r\n')
-				return
-			}, (e: unknown) => {
-				run.appendOutput('----- uriB error=' + e + ' ------ \r\n')
-				return
-			})
-
-			const loc2A = new Location(uriA, new Position(Number(locationMatch2[4]) - 1, 0))
-			const loc2B = new Location(uriC, new Position(Number(locationMatch2[4]), 0))
-			const loc2C = new Location(uriB, new Position(Number(locationMatch2[4]), 0))
-			const loc2D = new Location(currentTest.uri!, new Position(Number(locationMatch2[4]) - 1, 0))
-			run.appendOutput('----- loc2A - ' + loc2A.uri.fsPath + ' ------ \r\n')
-			run.appendOutput('----- loc2A - ' + loc2B.uri.fsPath + ' ------ \r\n')
-			run.appendOutput('----- loc2A - ' + loc2C.uri.fsPath + ' ------ \r\n')
-			run.appendOutput('----- loc2A - ' + loc2D.uri.fsPath + ' ------ \r\n')
-			run.appendOutput('----- loc2A - ' + JSON.stringify(loc2A) + ' ------ \r\n')
-			run.appendOutput('----- loc2B - ' + JSON.stringify(loc2B) + ' ------ \r\n')
-			run.appendOutput('----- loc2C - ' + JSON.stringify(loc2C) + ' ------ \r\n')
-			run.appendOutput('----- loc2D - ' + JSON.stringify(loc2D) + ' ------ \r\n')
-			run.appendOutput(locationMatch2[0] + '\r\n')
-			run.appendOutput(locationMatch2[1] + '\n')
-			run.appendOutput(locationMatch2[2] + '\n')
-			run.appendOutput(locationMatch2[3] + '\n')
-			run.appendOutput(locationMatch2[4] + '\n')
-			run.appendOutput(locationMatch2[5] + '\n')
-			run.appendOutput('A: ' + locationMatch2[6] + '\r\n', loc2A, currentTest)
-			run.appendOutput('B: ' + locationMatch2[6] + '\r\n', loc2B, currentTest)
-			run.appendOutput('C: ' + locationMatch2[6] + '\r\n', loc2C, currentTest)
-			run.appendOutput('D: ' + locationMatch2[6] + '\r\n', loc2D, currentTest)
-			// run.appendOutput(locationMatch2[6] + '\r\n', loc2B, currentTest)
+			const uriC = Uri.joinPath(workspaceUri!, locationMatch2[2])
+			const loc2C = new Location(uriC, new Position(Number(locationMatch2[4]) - 1, 0))
+			run.appendOutput(locationMatch2[0].replace(locationMatch2[6], ''))
+			run.appendOutput(locationMatch2[6] + '\r\n', loc2C, currentTest)
 			continue
 		}
 
-
 		run.appendOutput(msg + '\r\n')
-
 	}
-
-
-	// if (errs.length > 0) {
-	// 	run.errored(currentTest, new TestMessage(errs.join('\n')))
-	// }
-
-	// run.appendOutput(msgs.join('\r\n'), loc, currentTest)
 }
-
-// [stdout] 1..6
-// [stdout] not ok 1 addition using bc in 0sec
-// [stdout] # (in test file test0.bats, line 4)
-// [stdout] #   `result="$(echo 2+2 | bc)"' failed with status 127
-// [stdout] # /tmp/bats-run-384/bats.437.src: line 4: bc: command not found
-// [stdout] ok 2 simple passing test in 1sec
-// [stdout] not ok 3 addition using dc in 0sec
-// [stdout] # (in test file test0.bats, line 14)
-// [stdout] #   `result="$(echo 2 2+p | dc)"' failed with status 127
-// [stdout] # /tmp/bats-run-384/bats.454.src: line 14: dc: command not found
-// [stdout] ok 4 simple passing test 2 in 0sec
-// [stdout] not ok 5 addition using dc fail in 0sec
-// [stdout] # (in test file test0.bats, line 25)
-// [stdout] #   `result="$(echo 3 3+p | dc)"' failed with status 127
-// [stdout] # /tmp/bats-run-384/bats.471.src: line 25: dc: command not found
-// [stdout] not ok 6 one line in 0sec
-// [stdout] # (in test file test0.bats, line 29)
-// [stdout] #   `@test "one line" { result="$(echo 2+2 | bc)"; [ "$result" -eq 4 ]; }' failed with status 127
-// [stdout] # /tmp/bats-run-384/bats.479.src: line 29: bc: command not found

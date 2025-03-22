@@ -14,7 +14,3 @@ function_3 () {
     local PARAM2=$1
     echo $(($PARAM1 + $PARAM2))
 }
-
-# function_4 () {
-#     echo 3 3+p | dc
-# }

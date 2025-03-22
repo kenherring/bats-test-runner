@@ -1,15 +1,16 @@
 #!/bin/bash
 
-. src/anotherFile.sh
+. src/another.sh
+load src/someOther.sh
 
 @test "test_1" {
     result=$(function_1)
-    [ "$RESULT" = "1" ]
+    [ "$result" = "1" ]
 }
 
 @test "test_2 function exits 2" {
     result=$(function_2 2)
-    [ "$RESULT" = 0 ]
+    [ "$result" = 2 ]
 }
 
 
@@ -18,7 +19,7 @@
     [ "$result" -eq 3 ]
 }
 
-# @test "test_4 addition in other file fail" {
-#     result=$(function_4)
-#     [ "$result -eq 4 ]
-# }
+@test "test_4" {
+    result=$(someOtherFunction)
+    [ "$result" -eq 4 ]
+}
