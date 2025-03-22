@@ -30,7 +30,7 @@
 			"args": [
 				// "--extensionDevelopmentPath=${workspaceFolder}/dummy-ext",
 				"--install-extension",
-				"${workspaceFolder}/bats-test-runner-0.0.5-10.vsix",
+				"${workspaceFolder}/bats-test-runner-0.0.5.vsix",
 				"${workspaceFolder}/test_projects/${input:workspaceName}"
 			]
 		},

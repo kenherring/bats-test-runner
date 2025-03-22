@@ -1,68 +1,8 @@
-# [0.0.5-10](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-10) - 2025-03-22 (pre-release)
+# [0.0.5](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5) - 2025-03-22
 
+Build with dependency (#5)
 
-
-**Full Changelog**: [0.0.4...0.0.5-10](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5-10)
-
-# [0.0.5-9](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-9) - 2025-03-21 (pre-release)
-
-
-
-**Full Changelog**: [0.0.4...0.0.5-9](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5-9)
-
-# [0.0.5-8](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-8) - 2025-03-21 (pre-release)
-
-
-
-**Full Changelog**: [0.0.4...0.0.5-8](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5-8)
-
-# [0.0.5-7](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-7) - 2025-03-21 (pre-release)
-
-
-
-**Full Changelog**: [0.0.4...0.0.5-7](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5-7)
-
-# [0.0.5-6](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-6) - 2025-03-21 (pre-release)
-
-
-
-**Full Changelog**: [0.0.4...0.0.5-6](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5-6)
-
-# [0.0.5-5](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-5) - 2025-03-21 (pre-release)
-
-
-
-**Full Changelog**: [0.0.4...0.0.5-5](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5-5)
-
-# [0.0.5-4](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-4) - 2025-03-21 (pre-release)
-
-
-
-**Full Changelog**: [0.0.4...0.0.5-4](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5-4)
-
-# [0.0.5-3](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-3) - 2025-03-21 (pre-release)
-
-
-
-**Full Changelog**: [0.0.4...0.0.5-3](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5-3)
-
-# [0.0.5-2](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-2) - 2025-03-21 (pre-release)
-
-
-
-**Full Changelog**: [0.0.4...0.0.5-2](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5-2)
-
-# [0.0.5-1](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-1) - 2025-03-21 (pre-release)
-
-
-
-**Full Changelog**: [0.0.4...0.0.5-1](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5-1)
-
-# [0.0.5-0](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5-0) - 2025-03-21 (pre-release)
-
-
-
-**Full Changelog**: [0.0.4...0.0.5-0](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5-0)
+**Full Changelog**: [0.0.4...0.0.5](https://github.com/kenherring/bats-test-runner/compare/0.0.4...0.0.5)
 
 # [0.0.4](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.4) - 2025-03-19
 
