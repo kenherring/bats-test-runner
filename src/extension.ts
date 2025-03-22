@@ -205,7 +205,7 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 
 	log.info('extensionUri=' + extensionUri.fsPath)
 	// const dir = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin', 'bats').fsPath.replace(/\\/g, '/')
-	const batsPath = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin').fsPath
+	const batsPath = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'libexec', 'bats-core').fsPath
 	// const batsPath = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin').fsPath.replace(/\\/g, '/')
 	const args = [
 		// cmd,
@@ -222,7 +222,7 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 	}
 
 	const envs = { ...process.env}
-	envs['PATH'] = batsPath
+	envs['PATH'] = envs['PATH'] + ':' + batsPath
 	log.info('PATH=' + envs['PATH'])
 
 	const spawnOptions: SpawnOptions = {
