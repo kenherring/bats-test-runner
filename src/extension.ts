@@ -238,9 +238,9 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 	const prom = new Promise<void>((resolve, reject) => {
 		log.info('cmd: ' + args.join(' '))
 		run.appendOutput('cmd: ' + batsPath + ' ' + args.join(' ') + '\r\n', undefined, item)
-		const proc = spawn(batsPath, args, spawnOptions)
+		// const proc = spawn(batsPath, args, spawnOptions)
+		const proc = spawn('\'' + batsPath + '\'', args, spawnOptions)
 		run.appendOutput('proc=' + JSON.stringify(proc, null, 2))
-		// const proc = spawn('\'' + batsPath + '\'', args, spawnOptions)
 
 		const lines: string[] = []
 		proc.stdout?.on('data', (data: Buffer) => {
