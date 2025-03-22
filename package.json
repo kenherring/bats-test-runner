@@ -126,17 +126,6 @@
 				}
 			}
 		},
-		"languages": [
-			{
-				"id": "bats",
-				"aliases": [
-					"bash automated testing system"
-				],
-				"extensions": [
-					".bats"
-				]
-			}
-		],
 		"jsonValidation": [],
 		"snippets": []
 	}

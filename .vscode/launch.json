@@ -14,6 +14,7 @@
 				"--extensionDevelopmentPath=${workspaceFolder}",
 				// "${input:disable-extensions}",
 				"--disable-extensions",
+				"--profile-temp",
 				"${workspaceFolder}/test_projects/${input:workspaceName}"
 			],
 			"outFiles": [
