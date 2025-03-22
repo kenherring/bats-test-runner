@@ -204,7 +204,9 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 	}
 
 	log.info('extensionUri=' + extensionUri.fsPath)
-	const cmd = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin', 'bats').fsPath.replace(/\\/g, '/')
+	// const dir = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin', 'bats').fsPath.replace(/\\/g, '/')
+	const batsPath = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin').fsPath
+	// const batsPath = Uri.joinPath(extensionUri, 'node_modules', 'bats', 'bin').fsPath.replace(/\\/g, '/')
 	const args = [
 		// cmd,
 		workspace.asRelativePath(item.uri),
@@ -219,18 +221,23 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 		args.push('--filter', '\'' + item.label + '\'')
 	}
 
+	const envs = { ...process.env}
+	envs['PATH'] = batsPath
+	log.info('PATH=' + envs['PATH'])
+
 	const spawnOptions: SpawnOptions = {
 		cwd: workspace.getWorkspaceFolder(item.uri)?.uri.fsPath,
 		// shell: true,
+		// argv0: cmd,
 		timeout: 10000,
-		env: { ...process.env },
+		env: envs,
 		// signal: abort.signal,
 	}
 
 	const prom = new Promise<void>((resolve, reject) => {
 		log.info('cmd: ' + args.join(' '))
-		run.appendOutput('cmd: ' + args.join(' ') + '\r\n', undefined, item)
-		const proc = spawn(cmd, args, spawnOptions)
+		run.appendOutput('cmd: bats ' + args.join(' ') + '\r\n', undefined, item)
+		const proc = spawn('bats', args, spawnOptions)
 
 		const lines: string[] = []
 		proc.stdout?.on('data', (data: Buffer) => {
@@ -249,8 +256,8 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 			let message = ''
 			let duration = -1
 			let failedMessage = ''
-			let command = ''
-			let statusCode = -1
+			// let command = ''
+			// let statusCode = -1
 
 			const okRegex = /^(ok|not ok) (\d+) (.*)$/
 			const durationRegex = /\s+duration_ms:\s+(\d+)/
@@ -282,8 +289,8 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 
 				const failedMatch = failedRegex.exec(r)
 				if (failedMatch) {
-					command = failedMatch[1]
-					statusCode = parseInt(failedMatch[2])
+					// command = failedMatch[1]
+					// statusCode = parseInt(failedMatch[2])
 					// failedMessage += 'command: ' + command + ', status: ' + status + '\r\n'
 					failedMessage += failedMatch[0] + '\n'
 					continue
