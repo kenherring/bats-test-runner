@@ -20,7 +20,6 @@ import {
 import { log } from './ChannelLogger'
 import { spawn, SpawnOptions } from 'child_process'
 import { IBatsExport, ITestSummary } from 'extensionExports'
-import path from 'path'
 
 export function activate (context: ExtensionContext) {
 
@@ -376,18 +375,14 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 
 function processOutput (run: TestRun, currentTest: TestItem, msgs: string[]) {
 
-	const locationRegex1 = /file (.*\.bats), line (\d+)/
+	// const locationRegex1 = /file (.*\.bats), line (\d+)/
 	const locationRegex2 = /^(# )(.*)(: line )(\d+)(: )(.*)$/
 	const commandRegex = /# *`(.*)' (failed.*)/
 
-	const errs: string[] = []
-	let loc: Location | undefined = undefined
+	// let loc: Location | undefined = undefined
 	for (const msg of msgs) {
-		if (msg.startsWith('# ')) {
-			errs.push(msg)
-		}
 		const commandMatch = commandRegex.exec(msg)
-		const locationMatch1 = locationRegex1.exec(msg)
+		// const locationMatch1 = locationRegex1.exec(msg)
 		const locationMatch2 = locationRegex2.exec(msg)
 
 
@@ -395,9 +390,9 @@ function processOutput (run: TestRun, currentTest: TestItem, msgs: string[]) {
 			const testMessage = new TestMessage(commandMatch[2])
 			run.failed(currentTest, [testMessage])
 		}
-		if (locationMatch1) {
-			loc = new Location(currentTest.uri!, new Position(Number(locationMatch1[2]) - 1, 0))
-		}
+		// if (locationMatch1) {
+		// 	loc = new Location(currentTest.uri!, new Position(Number(locationMatch1[2]) - 1, 0))
+		// }
 		if (locationMatch2) {
 			const workspaceUri = workspace.getWorkspaceFolder(currentTest.uri!)?.uri
 			const uriC = Uri.joinPath(workspaceUri!, locationMatch2[2])
