@@ -228,7 +228,8 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 
 	const spawnOptions: SpawnOptions = {
 		cwd: workspace.getWorkspaceFolder(item.uri)?.uri.fsPath,
-		// shell: true,
+		shell: true,
+		argv0: '',
 		// argv0: cmd,
 		timeout: 10000,
 		env: envs,
