@@ -310,28 +310,29 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 
 			for (const line of lines) {
 				const okMatch = okRegex.exec(line)
-				if (okMatch) {
-					status = okMatch[1]
-					// testNum = Number(okMatch[2])
-					testName = okMatch[3]
-					duration = Number(okMatch[4])
-					if (okMatch[5] == 'sec') {
-						duration = duration * 1000
-					}
+				if (!okMatch) {
+					continue
+				}
+				status = okMatch[1]
+				// testNum = Number(okMatch[2])
+				testName = okMatch[3]
+				duration = Number(okMatch[4])
+				if (okMatch[5] == 'sec') {
+					duration = duration * 1000
+				}
 
-					for (const [, child] of item.children) {
-						if (child.label === testName) {
-							processOutput(run, currentTest, msgs)
-							msgs = []
-							currentTest = child
-						}
+				for (const [, child] of item.children) {
+					if (child.label === testName) {
+						processOutput(run, currentTest, msgs)
+						msgs = []
+						currentTest = child
 					}
+				}
 
-					if (status == 'ok') {
-						run.passed(currentTest, duration)
-					} else {
-						run.failed(currentTest, [], duration)
-					}
+				if (status == 'ok') {
+					run.passed(currentTest, duration)
+				} else {
+					run.failed(currentTest, [], duration)
 				}
 
 				msgs.push(line)
