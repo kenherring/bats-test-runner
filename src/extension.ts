@@ -306,7 +306,7 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 			let duration = -1
 
 			// Example: not ok 1 addition using bc in 0sec
-			const okRegex = /^(ok|not ok) (\d+) (.*) in (\d+)sec$/
+			const okRegex = /^(ok|not ok) (\d+) (.*) in (\d+)(sec|ms)$/
 
 			for (const line of lines) {
 				const okMatch = okRegex.exec(line)
@@ -315,6 +315,9 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 					// testNum = Number(okMatch[2])
 					testName = okMatch[3]
 					duration = Number(okMatch[4])
+					if (okMatch[5] == 'sec') {
+						duration = duration * 1000
+					}
 
 					for (const [, child] of item.children) {
 						if (child.label === testName) {
