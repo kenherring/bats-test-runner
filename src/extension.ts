@@ -475,11 +475,6 @@ function findTestItem (ctrl: TestController, uri: Uri): TestItem | undefined {
 		if (item.uri && item.uri.fsPath === uri.fsPath) {
 			return item
 		}
-		for (const [, child] of item.children) {
-			if (child.uri && child.uri.fsPath === uri.fsPath) {
-				return child
-			}
-		}
 	}
 	return undefined
 }
