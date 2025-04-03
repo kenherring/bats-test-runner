@@ -1,3 +1,9 @@
+# [0.0.6](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.6) - 2025-04-02 (pre-release)
+
+Account for duration reported in ms instead of seconds (#8)
+
+**Full Changelog**: [0.0.5...0.0.6](https://github.com/kenherring/bats-test-runner/compare/0.0.5...0.0.6)
+
 # [0.0.5](https://github.com/kenherring/bats-test-runner/releases/tag/0.0.5) - 2025-03-22
 
 Build with dependency (#5)
