@@ -25,12 +25,16 @@ suite('proj0  - Extension Test Suite', () => {
 		log.info('suiteSetup')
 
 		workspaceUri = vscode.workspace.workspaceFolders![0].uri
-		const sourceFile2 = vscode.Uri.joinPath(workspaceUri, 'proj0.2.bats')
-		const sourceCopy2 = vscode.Uri.joinPath(workspaceUri, 'proj0.2.copy.bats')
-		const sourceFile3 = vscode.Uri.joinPath(workspaceUri, 'proj0.3.bats')
-		void vscode.workspace.fs.delete(sourceFile2).then(() => { return }, (_e: unknown) => { return })
-		void vscode.workspace.fs.delete(sourceCopy2).then(() => { return }, (_e: unknown) => { return })
-		void vscode.workspace.fs.delete(sourceFile3).then(() => { return }, (_e: unknown) => { return })
+		const deleteFiles = [
+			'proj0.2.bats',
+			'proj0.2.copy.bats',
+			'proj0.3.bats',
+			'proj0.4.bats',
+			'proj0.5.bats',
+		]
+		for (const file of deleteFiles) {
+			void vscode.workspace.fs.delete(vscode.Uri.joinPath(workspaceUri, file)).then(() => { return }, (_e: unknown) => { return })
+		}
 
 		const localExt = vscode.extensions.getExtension('kherring.bats-test-runner')
 		if (!localExt) {
@@ -70,11 +74,8 @@ suite('proj0  - Extension Test Suite', () => {
 			await prom
 		}
 		if (exports.getTestCount() === 0) {
-			log.error('No tests found')
 			assert.fail('No tests found')
 		}
-
-		log.info('ext.exports=' + JSON.stringify(exports))
 
 		await vscode.commands.executeCommand('testing.runAll').then(() => {
 			log.info('proj0.1 - run all tests - done')
@@ -132,7 +133,7 @@ suite('proj0  - Extension Test Suite', () => {
 	})
 
 	test('proj0.4 - verify test summary after removing test', async () => {
-		const sourceFile = vscode.Uri.joinPath(workspaceUri, 'proj0.3.bats')
+		const sourceFile = vscode.Uri.joinPath(workspaceUri, 'proj0.4.bats')
 		await vscode.workspace.fs.writeFile(sourceFile, Buffer.from('#!/usr/bin/env bats\n\n@test "new test" {\n  run true\n  assert_success\n}\n\n@test "new test 2" {\n  run true\n  assert_success\n}\n'))
 		assert.ok(doesFileExist(sourceFile), `Failed to create source file ${sourceFile.fsPath}`)
 		await exports.resolveTests()
@@ -145,7 +146,16 @@ suite('proj0  - Extension Test Suite', () => {
 		const newCount = exports.getTestCount(sourceFile)
 		log.info('newCount = ' + newCount)
 		assert.equal(newCount, firstCount - 1, 'Expected ' + (firstCount - 1) + ' tests after deleting the test file, but found ' + exports.getTestCount())
+	})
 
+	test('proj0.5 - create file and open', async () => {
+		const sourceFile = vscode.Uri.joinPath(workspaceUri, 'proj0.5.bats')
+		await vscode.workspace.fs.writeFile(sourceFile, Buffer.from('#!/usr/bin/env bats\n\n@test "new test" {\n  run true\n  assert_success\n}\n\n@test "new test 2" {\n  run true\n  assert_success\n}\n'))
+		await vscode.commands.executeCommand('vscode.open', sourceFile)
+		await exports.resolveTests(sourceFile)
+		await exports.resolveTests(sourceFile)
+		const testCount = exports.getTestCount(sourceFile)
+		assert.equal(testCount, 2, 'Expected 2 tests in the file after opening it, but found ' + testCount)
 	})
 
 })
@@ -155,7 +165,7 @@ function doesFileExist (sourceFile: vscode.Uri | string) {
 	try {
 		const stat = fs.statSync(path)
 		return stat.isFile()
-	} catch (e: unknown) {
+	} catch (_e: unknown) {
 		return false
 	}
 }

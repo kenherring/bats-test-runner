@@ -38,10 +38,8 @@ export function activate (context: ExtensionContext) {
 	log.info('subscription-1')
 	context.subscriptions.push(
 		workspace.onDidSaveTextDocument((doc) => parseFileForTestCases(ctrl, findTestItem(ctrl, doc.uri))),
-		workspace.onDidCreateFiles((event) => {
-			log.info('onDidCreateFiles files.length=' + event.files.length)
-			return parseFilesForTestCases(ctrl, event.files as Uri[])
-		}),
+		workspace.onDidCreateFiles((event) => parseFilesForTestCases(ctrl, event.files as Uri[])),
+		workspace.onDidOpenTextDocument((doc) => parseFileForTestCases(ctrl, findTestItem(ctrl, doc.uri))),
 		workspace.onDidDeleteFiles((event) => { deleteTests(ctrl, event.files as Uri[]) }),
 	)
 	log.info('subscription-2')
@@ -70,9 +68,12 @@ export function activate (context: ExtensionContext) {
 		}
 
 		return runTests(run, context.extensionUri, testsToRun).then((sum: ITestSummary) => {
+			log.info('runTests done, summary: ' + JSON.stringify(sum))
 			testSummary = sum
 			log.info('runHandler done')
 			return
+		}, (e: unknown) => {
+			log.error('runTests failed: ' + e)
 		})
 	}
 
