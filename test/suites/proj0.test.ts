@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
-import { log } from 'ChannelLogger'
+import * as fs from 'fs'
 import assert from 'assert'
+import { log } from 'ChannelLogger'
 import { IBatsExport } from 'extensionExports'
 
 export function sleep (time = 10, msg?: string | null) {
@@ -18,9 +19,19 @@ suite('proj0  - Extension Test Suite', () => {
 
 	let ext: vscode.Extension<unknown>
 	let exports: IBatsExport
+	let workspaceUri: vscode.Uri
 
-	suiteSetup('proj0 - before', () => {
+	suiteSetup('proj0 - before', async () => {
 		log.info('suiteSetup')
+
+		workspaceUri = vscode.workspace.workspaceFolders![0].uri
+		const sourceFile2 = vscode.Uri.joinPath(workspaceUri, 'proj0.2.bats')
+		const sourceCopy2 = vscode.Uri.joinPath(workspaceUri, 'proj0.2.copy.bats')
+		const sourceFile3 = vscode.Uri.joinPath(workspaceUri, 'proj0.3.bats')
+		void vscode.workspace.fs.delete(sourceFile2).then(() => { return }, (_e: unknown) => { return })
+		void vscode.workspace.fs.delete(sourceCopy2).then(() => { return }, (_e: unknown) => { return })
+		void vscode.workspace.fs.delete(sourceFile3).then(() => { return }, (_e: unknown) => { return })
+
 		const localExt = vscode.extensions.getExtension('kherring.bats-test-runner')
 		if (!localExt) {
 			log.error('Extension not found')
@@ -33,7 +44,8 @@ suite('proj0  - Extension Test Suite', () => {
 	})
 
 	setup('proj0 - beforeEach', async () => {
-		log.info('beforeEach1')
+		log.info('beforeEach')
+
 		if (!ext.isActive) {
 			log.error('Extension not active')
 			assert.fail('Extension not active')
@@ -77,11 +89,60 @@ suite('proj0  - Extension Test Suite', () => {
 
 		const results = exports.getTestSummary()
 		log.info('results=' + JSON.stringify(results, null, 2))
-		assert.ok(results?.started == 3, 'Expected 5 started, got ' + results?.started)
+		assert.ok(results?.started == 3, 'Expected 3 started, got ' + results?.started)
 		assert.ok(results?.errored == 0, 'Expected 0 errors, got ' + results?.errored)
 		assert.ok(results?.failed == 2, 'Expected 4 failures, got ' + results?.failed)
 		assert.ok(results?.passed == 1, 'Expected 0 passed, got ' + results?.passed)
 		assert.ok(results?.skipped == 0, 'Expected 0 skipped, got ' + results?.skipped)
 	})
 
+	test('proj0.2 - add test to file', () => {
+		log.info('proj0.2 - add test to file')
+		const sourceFile = vscode.Uri.joinPath(workspaceUri, 'proj0.2.bats')
+		assert.ok(!doesFileExist(sourceFile), `Expected source file ${sourceFile.fsPath} to not exist before the test is added`)
+
+		const prom = vscode.workspace.fs.writeFile(sourceFile, Buffer.from('#!/usr/bin/env bats\n\n@test "new test" {\n  run true\n  assert_success\n}\n'))
+			.then(() => {
+				assert.ok(doesFileExist(sourceFile), `Failed to create source file ${sourceFile.fsPath}`)
+				return sleep(250)
+			}).then(() => {
+				return exports.resolveTests()
+			}).then((count: number) => {
+				assert.equal(count, 4, 'Expected 4 tests after adding a new test, but found ' + count)
+				return exports.resolveTests(sourceFile)
+			}).then((count: number) => {
+				assert.equal(count, 1, 'Expected resolveTests to return -1 when called with a specific file that has not been processed yet. Found: ' + count)
+				assert.equal(exports.getTestCount(sourceFile), 1, 'Expected 1 tests in the file after adding a new test, but found ' + exports.getTestCount(sourceFile))
+				return
+			})
+		return prom
+	})
+
+	test('proj0.3 - verify test summary after adding a test', async () => {
+		const sourceFile = vscode.Uri.joinPath(workspaceUri, 'proj0.3.bats')
+		await vscode.workspace.fs.writeFile(sourceFile, Buffer.from('#!/usr/bin/env bats\n\n@test "new test" {\n  run true\n  assert_success\n}\n\n@test "new test" {\n  run true\n  assert_success\n}\n'))
+		assert.ok(doesFileExist(sourceFile), `Failed to create source file ${sourceFile.fsPath}`)
+		await exports.resolveTests()
+		const firstCount = exports.getTestCount()
+		log.info('firstCount = ' + firstCount)
+
+		await vscode.workspace.fs.delete(sourceFile).then(() => sleep(259))
+		await exports.resolveTests()
+		assert.ok(!doesFileExist(sourceFile), `Failed to delete source file ${sourceFile.fsPath} after test`)
+		const newCount = exports.getTestCount()
+		log.info('newCount = ' + newCount)
+		assert.equal(newCount, firstCount - 1, 'Expected ' + (firstCount - 1) + ' tests after deleting the test file, but found ' + exports.getTestCount())
+
+	})
+
 })
+
+function doesFileExist (sourceFile: vscode.Uri | string) {
+	const path = typeof sourceFile === 'string' ? sourceFile : sourceFile.fsPath
+	try {
+		const stat = fs.statSync(path)
+		return stat.isFile()
+	} catch (e: unknown) {
+		return false
+	}
+}
