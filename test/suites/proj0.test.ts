@@ -120,16 +120,29 @@ suite('proj0  - Extension Test Suite', () => {
 
 	test('proj0.3 - verify test summary after adding a test', async () => {
 		const sourceFile = vscode.Uri.joinPath(workspaceUri, 'proj0.3.bats')
-		await vscode.workspace.fs.writeFile(sourceFile, Buffer.from('#!/usr/bin/env bats\n\n@test "new test" {\n  run true\n  assert_success\n}\n\n@test "new test" {\n  run true\n  assert_success\n}\n'))
+		await vscode.workspace.fs.writeFile(sourceFile, Buffer.from('#!/usr/bin/env bats\n\n@test "new test" {\n  run true\n  assert_success\n}\n\n@test "new test 2" {\n  run true\n  assert_success\n}\n'))
 		assert.ok(doesFileExist(sourceFile), `Failed to create source file ${sourceFile.fsPath}`)
 		await exports.resolveTests()
 		const firstCount = exports.getTestCount()
-		log.info('firstCount = ' + firstCount)
 
 		await vscode.workspace.fs.delete(sourceFile).then(() => sleep(259))
 		await exports.resolveTests()
 		assert.ok(!doesFileExist(sourceFile), `Failed to delete source file ${sourceFile.fsPath} after test`)
-		const newCount = exports.getTestCount()
+		assert.equal(exports.getTestCount(), firstCount - 1, 'Expected ' + (firstCount - 1) + ' tests after deleting the test file, but found ' + exports.getTestCount())
+	})
+
+	test('proj0.4 - verify test summary after removing test', async () => {
+		const sourceFile = vscode.Uri.joinPath(workspaceUri, 'proj0.3.bats')
+		await vscode.workspace.fs.writeFile(sourceFile, Buffer.from('#!/usr/bin/env bats\n\n@test "new test" {\n  run true\n  assert_success\n}\n\n@test "new test 2" {\n  run true\n  assert_success\n}\n'))
+		assert.ok(doesFileExist(sourceFile), `Failed to create source file ${sourceFile.fsPath}`)
+		await exports.resolveTests()
+		await exports.resolveTests(sourceFile)
+		const firstCount = exports.getTestCount(sourceFile)
+		assert.equal(firstCount, 2, 'Expected 2 tests in the file after adding a new test, but found ' + firstCount)
+
+		await vscode.workspace.fs.writeFile(sourceFile, Buffer.from('#!/usr/bin/env bats\n\n@test "new test" {\n  run true\n  assert_success\n}\n'))
+		await exports.resolveTests(sourceFile)
+		const newCount = exports.getTestCount(sourceFile)
 		log.info('newCount = ' + newCount)
 		assert.equal(newCount, firstCount - 1, 'Expected ' + (firstCount - 1) + ' tests after deleting the test file, but found ' + exports.getTestCount())
 

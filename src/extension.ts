@@ -145,12 +145,18 @@ export function activate (context: ExtensionContext) {
 	return exports
 }
 
+function createTest (ctrl: TestController, file: Uri) {
+	const item = ctrl.createTestItem(file.fsPath, workspace.asRelativePath(file), file)
+	item.canResolveChildren = true
+	item.tags = [new TestTag('runnable')]
+	ctrl.items.add(item)
+}
+
 function parseFilesForTestCases (ctrl: TestController, files: Uri[]) {
 	const proms = []
 	log.info('parsing ' + files.length + ' files for test cases')
 	for (const f of files) {
 		const item = findTestItem(ctrl, f)
-		log.info('item.id=' + item?.id)
 		if (!item) {
 			createTest(ctrl, f)
 		}
@@ -159,20 +165,10 @@ function parseFilesForTestCases (ctrl: TestController, files: Uri[]) {
 	return Promise.all(proms)
 }
 
-function createTest (ctrl: TestController, file: Uri) {
-	const item = ctrl.createTestItem(file.fsPath, workspace.asRelativePath(file), file)
-	item.canResolveChildren = true
-	item.tags = [new TestTag('runnable')]
-	ctrl.items.add(item)
-}
-
 function parseFileForTestCases (ctrl: TestController, item: TestItem | undefined) {
-	log.info('item.id=' + item?.id)
 	if (!item) {
 		return Promise.resolve()
 	}
-	log.info('parseFileForTestCases item.id=' + item.id)
-
 	if (!item.uri) {
 		throw new Error('item.uri is undefined')
 	}
@@ -238,7 +234,6 @@ function getTestCount (ctrl: TestController, testUri?: Uri) {
 	}
 
 	const item = findTestItem(ctrl, testUri)
-	log.info('item.id=' + item?.id + ' item.children.size=' + item?.children.size)
 	return item?.children.size ?? 0
 }
 
@@ -477,11 +472,11 @@ function processOutput (run: TestRun, currentTest: TestItem, msgs: string[]) {
 function findTestItem (ctrl: TestController, uri: Uri): TestItem | undefined {
 	// find the test item by uri in the test controller
 	for (const [, item] of ctrl.items) {
-		if (item.uri && item.uri.toString() === uri.toString()) {
+		if (item.uri && item.uri.fsPath === uri.fsPath) {
 			return item
 		}
 		for (const [, child] of item.children) {
-			if (child.uri && child.uri.toString() === uri.toString()) {
+			if (child.uri && child.uri.fsPath === uri.fsPath) {
 				return child
 			}
 		}
