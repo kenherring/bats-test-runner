@@ -33,12 +33,18 @@ export function activate (context: ExtensionContext) {
 	}
 	log.info('activating extension! (version=' + getExtensionVersion() + ', logLevel=' + log.getLogLevel() + ', context.extensionMode=' + context.extensionMode + ')')
 
-	// context.subscriptions.push(
-	// 	// workspace.onDidChangeConfiguration(e => { return updateConfiguration(e) }),
-	// 	workspace.onDidCreateFiles(e => { log.info('workspace.onDidCreate ' + e.files[0].fsPath) }),
-	// 	// workspace.onDidCreateFiles(e => { log.info('workspace.onDidCreate ' + e.files[0].fsPath); return createOrUpdateFile(ctrl, e, true) }),
-	// 	// workspace.onDidDeleteFiles(e => { log.info('workspace.onDidDelete ' + e.files[0].fsPath); return deleteFiles(ctrl, e.files) }),
-	// )
+
+	context.subscriptions.push(
+		workspace.onDidSaveTextDocument((doc) => parseFileForTestCases(ctrl, findTestItem(ctrl, doc.uri))),
+		workspace.onDidCreateFiles((event) => {
+			const proms = []
+			for (const f of event.files) {
+				proms.push(parseFileForTestCases(ctrl, findTestItem(ctrl, f)))
+			}
+			return Promise.all(proms)
+		}),
+		workspace.onDidDeleteFiles((event) => { deleteTests(ctrl, event.files as Uri[]) })
+	)
 
 	const runHandler = (request: TestRunRequest, token: CancellationToken) => {
 		log.info('runHandler')
@@ -139,7 +145,10 @@ export function activate (context: ExtensionContext) {
 	return exports
 }
 
-function parseFileForTestCases (ctrl: TestController, item: TestItem) {
+function parseFileForTestCases (ctrl: TestController, item: TestItem | undefined) {
+	if (!item) {
+		return Promise.resolve()
+	}
 	log.info('parseFileForTestCases item.id=' + item.id)
 
 	if (!item.uri) {
@@ -150,10 +159,23 @@ function parseFileForTestCases (ctrl: TestController, item: TestItem) {
 		const content = data.toString()
 		const regex = /@test\s+["'](.*)["']\s+{/g
 		let match = regex.exec(content)
+
+		const childrenNames: string[] = []
+		for (const [, child] of item.children) {
+			childrenNames.push(child.label.toString())
+		}
+
 		while (match) {
 			const testName = match[1]
 			const testUri = item.uri!.with({ fragment: testName })
-			// const testDescription = match[2]
+
+			const idx = childrenNames.indexOf(testName)
+			if (idx > -1) {
+				// already have this test, skip it
+				childrenNames.splice(idx, 1)
+				continue
+			}
+
 			const testItem = ctrl.createTestItem(testUri.toString(), testName, item.uri)
 			testItem.tags = [new TestTag('runnable')]
 			item.children.add(testItem)
@@ -163,6 +185,16 @@ function parseFileForTestCases (ctrl: TestController, item: TestItem) {
 			testItem.description = 'line ' + line
 
 			match = regex.exec(content)
+		}
+
+		// remove any children that are no longer in the file
+		for (const name of childrenNames) {
+			for (const [, child] of item.children) {
+				if (child.label.toString() === name) {
+					item.children.delete(child.id)
+					break
+				}
+			}
 		}
 		return
 	})
@@ -407,5 +439,33 @@ function processOutput (run: TestRun, currentTest: TestItem, msgs: string[]) {
 		}
 
 		run.appendOutput(msg + '\r\n')
+	}
+}
+
+function findTestItem (ctrl: TestController, uri: Uri): TestItem | undefined {
+	// find the test item by uri in the test controller
+	for (const [, item] of ctrl.items) {
+		if (item.uri && item.uri.toString() === uri.toString()) {
+			return item
+		}
+		for (const [, child] of item.children) {
+			if (child.uri && child.uri.toString() === uri.toString()) {
+				return child
+			}
+		}
+	}
+	return undefined
+}
+
+function deleteTests (ctrl: TestController, uris: Uri[]) {
+	for (const uri of uris) {
+		log.info('deleteTests uri=' + uri.toString())
+		const item = findTestItem(ctrl, uri)
+		if (item) {
+			log.info('deleting test item id=' + item.id)
+			ctrl.items.delete(item.id) // remove from the test controller
+		} else {
+			log.info('no test item found for uri=' + uri.toString())
+		}
 	}
 }

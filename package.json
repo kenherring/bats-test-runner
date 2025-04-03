@@ -31,9 +31,9 @@
 	],
 	"badges": [
 		{
-			"href": "https://dl.circleci.com/status-badge/redirect/gh/kenherring/bats-test-runner/tree/main",
-			"url": "https://img.shields.io/circleci/build/github/kenherring/bats-test-runner/main?logo=circleci",
-			"description": "CircleCI Build Status"
+			"href": "https://github.com/kenherring/bats-test-runner/actions/workflows/main.yml",
+			"url": "https://github.com/kenherring/bats-test-runner/actions/workflows/main.yml/badge.svg",
+			"description": "GitHub Actions"
 		},
 		{
 			"href": "https://sonarcloud.io/summary/new_code?id=kenherring_bats-test-runner",
