@@ -13,6 +13,8 @@ runs:
     - name: Publish
       shell: bash
       if: github.ref_type == 'tag'
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
         if [ -z "${GITHUB_REF_NAME:-}" ]; then
           echo "GITHUB_REF_NAME is not set..."
