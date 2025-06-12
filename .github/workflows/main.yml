@@ -26,6 +26,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        if: matrix.os == 'ubuntu-latest'
+        with:
+          ignore_paths: ./test_projects/**
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
