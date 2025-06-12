@@ -16,7 +16,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const vsVersionNum = '1.88.0'
 
 function writeConfigToFile (name, config) {
-	fs.writeFileSync('.vscode-test.' + name + '.bk.json', JSON.stringify(config, null, 4).replace('    ', '\t'))
+	if (process.env['VERBOSE'] != 'false' && process.env['VERBOSE'] != '0') {
+		fs.writeFileSync('.vscode-test.' + name + '.bk.json', JSON.stringify(config, null, 4).replace('    ', '\t'))
+	}
 }
 
 function getMochaTimeout (projName) {
@@ -44,7 +46,7 @@ function getMochaOpts (projName) {
 		// ui: 'bdd' // default; suite, test, etc
 		retries: 0,
 		parallel: false,
-		bail: true,
+		bail: false,
 		require: [
 			'mocha',
 			'tsconfig-paths/register',
@@ -60,10 +62,6 @@ function getMochaOpts (projName) {
 			xunitReporterOptions: { output: xunitFile },
 			mochaReporterSonarqubeReporterOptions: { filename: sonarFile },
 		}
-	}
-
-	if (process.env['CIRCLECI']) {
-		mochaOpts.bail = false
 	}
 
 	return mochaOpts

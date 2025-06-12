@@ -30,9 +30,6 @@
 		"allowJs": true,
 		"checkJs": true,
 
-		// "allowSyntheticDefaultImports": true, // enabled by "esModuleInterop"
-		// "allowUnreachableCode": false, // editor warning when undefined
-		// "allowUnusedLabels": false, // editor warning when undefined
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"forceConsistentCasingInFileNames": true,
@@ -43,9 +40,6 @@
 		"noImplicitReturns": false,
 		"noImplicitThis": true,
 		"noPropertyAccessFromIndexSignature": true,
-		// see eslint rule - @typescript-eslint/no-unused-vars
-		// "noUnusedLocals": true,
-		// "noUnusedParameters": true,
 		"removeComments": true,
 		"strictFunctionTypes": true,
 		"strictNullChecks": true,

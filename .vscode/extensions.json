@@ -1,7 +1,6 @@
 {
 	"recommendations": [
 		"dbaeumer.vscode-eslint",
-		"github.vscode-pull-request-github",
 		"jetmartin.bats",
 		"ms-vscode.extension-test-runner",
 		"timonwong.shellcheck",
