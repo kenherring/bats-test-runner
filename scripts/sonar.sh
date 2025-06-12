@@ -2,8 +2,6 @@
 set -eou pipefail
 
 ## This script is helpful for testing the sonar scan locally
-## In the future it would be nice to use `circleci local execute sonar` but it currently requires a lot of
-## configuration to get working. This script is a quick way to test the sonar scan locally.
 
 ## Prerequisites:
 ##  - Coverage report in `artifacts/coverage/lcov.info`
@@ -19,58 +17,59 @@ main_block () {
     package
     pre_scan
     sonarcloud_scan "$@"
-    echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 <main>] $0 completed successfull!"
+    log_it "$0 completed successfull!"
 }
 
 initialize () {
-    echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}]"
+    log_it
     export SONAR_HOST_URL="https://sonarcloud.io"
     ESLINT_FILE=artifacts/eslint_report.json
 
     if [ ! -f artifacts/coverage/lcov.info ]; then
-        echo "ERROR: file not found - artifacts/coverage/lcov.info"
-        echo " --- hint:  run 'docker/run_tests.sh'"
+        log_error 'file not found - artifacts/coverage/lcov.info' \
+            " --- hint:  run \'docker/run_tests.sh'"
         exit 1
     fi
 }
 
 package () {
     VSIX_COUNT=$(find . -maxdepth 1 -name "*.vsix" | wc -l)
-    echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}] VSIX_COUNT=$VSIX_COUNT"
+    log_it "VSIX_COUNT=$VSIX_COUNT"
     DO_PACKAGE=false
     [ "$VSIX_COUNT" != "1" ] && DO_PACKAGE=true
     [ ! -f "$ESLINT_FILE" ] && DO_PACKAGE=true
 
-    echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}] DO_PACKAGE=$DO_PACKAGE"
+    log_it "DO_PACKAGE=$DO_PACKAGE"
 
     if $DO_PACKAGE; then
         .github/workflows/package.sh
     else
-        echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}] skipping package"
+        log_it "skipping package"
     fi
 }
 
 pre_scan () {
+    log_it "pwd=$(pwd)"
     package
     ## fix eslint report paths
     pwd
     ls -al artifacts
     ls -al "${ESLINT_FILE}"
-    sed -i 's|/home/circleci/project/|/root/project/|g' "${ESLINT_FILE}"
+    sed -i 's|'"$(pwd)/"'|/root/project/|g' "${ESLINT_FILE}"
     ## merge test results into a single file
     scripts/sonar_test_results_merge.sh
-    ## remove base dir of /home/circleci/project/
-    sed -i 's|/home/circleci/project||g' artifacts/eslint_report.json
+    ## remove base dir from eslint report
+    sed -i 's|'"$(pwd)/"'||g' artifacts/eslint_report.json
     jq . artifacts/eslint_report.json > artifacts/eslint_report_pretty.json
 
 }
 
 sonarcloud_scan () {
-    echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}]"
+    log_it
     VERSION=5.0.1.3006
     SONAR_TOKEN=${SONAR_TOKEN:-}
     if [ -z "$SONAR_TOKEN" ]; then
-        echo "ERROR: missing SONAR_TOKEN environment var"
+        log_error 'missing SONAR_TOKEN environment var'
         exit 1
     fi
     SCANNER_DIRECTORY=$(pwd)/tmp/cache/scanner

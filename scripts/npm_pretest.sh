@@ -6,7 +6,7 @@ set -eou pipefail
 initialize () {
 	log_it "pwd=$(pwd)"
 
-	CIRCLECI=${CIRCLECI:-false}
+	GITHUB_ACTION=${GITHUB_ACTION:-false}
 	NO_BUILD=${NO_BUILD:-false}
 	VERBOSE=${VERBOSE:-false}
 	VERBOSE=${VERBOSE:-false}

@@ -84,7 +84,7 @@ update_changelog () {
 	} > "changelog_$PACKAGE_VERSION.md"
 
 	mv "changelog_$PACKAGE_VERSION.md" CHANGELOG.md
-	if ! ${CIRCLECI:-false}; then
+	if ! ${GITHUB_ACTION:-false}; then
 		code --wait CHANGELOG.md
 	fi
 }
