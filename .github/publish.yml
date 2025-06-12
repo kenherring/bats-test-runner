@@ -7,13 +7,12 @@ permissions:
 jobs:
   publish:
     steps:
-    - name: Publish
-      if: startsWith(github.ref, 'refs/tags/')
-      env:
-        GH_REF: ${{ github.ref }}
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        VSCE_PAT: ${{ secrets.VSCE_PAT }}
-      run: |
-        npm run package
-        gh release upload "${GH_REF//refs\/tags\/}" bats-test-runner-*.vsix
-        npm run deploy
+      - name: Publish
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_REF: ${{ github.ref }}
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          npm run package
+          gh release upload "${GH_REF//refs\/tags\/}" bats-test-runner-*.vsix
+          npm run deploy
