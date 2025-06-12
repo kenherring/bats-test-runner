@@ -39,7 +39,7 @@ main_block () {
 
 upload_to_github_release () {
     echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}]"
-    local GH_TOKEN=$GH_TOKEN_PUBLISH
+    local GH_TOKEN=$GITHUB_TOKEN
     export GH_TOKEN
     sudo apt update
     sudo apt install --no-install-recommends -y gh
