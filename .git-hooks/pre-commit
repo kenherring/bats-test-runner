@@ -6,34 +6,31 @@ set -eou pipefail
 
 . scripts/common.sh
 
-validate_package_json () {
-	echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}]"
-	PACK1=$(md5sum package.json)
-	PACK2=$(package.stable.json)
-	if [ ! -f "$PACK2" ]; then
-		## If package.stable.json does not exist, nothing to compare
-		return 0
-	fi
-	if [ "$PACK1" != "$PACK2" ]; then
-		echo "package.json and package.stable.json are different and should be the same" >&2
-		exit 1
-	fi
-}
-
 validate_compile () {
-	echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}]"
+	log_it >&2
 	npm run build
 }
 
 validate_other () {
-	echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}]"
+	log_it >&2
 	if grep 'set -eou'; then
-		echo "ERROR: found 'set -eou'!  Change to 'set -euo pipefail'." >&2
+		log_error "found 'set -eou'!  Change to 'set -euo pipefail'."
+		exit 1
+	fi
+}
+
+validate_version () {
+	log_it >&2
+	VER1=$(jq '.version' < package.json)
+	VER2=$(jq '.version' < package-lock.json)
+	if [ "$VER1" != "$VER2" ]; then
+		log_error "version does not match between package.json and package-lock.json! ($VER1 != $VER2)"
 		exit 1
 	fi
 }
 
 ########## MAIN BLOCK ##########
 validate_compile
-validate_version_updated
-echo "pre-commit checks successful!" >&2
+validate_other
+validate_version
+log_it 'pre-commit checks successful!' >&2

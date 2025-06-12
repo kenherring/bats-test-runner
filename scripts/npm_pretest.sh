@@ -16,7 +16,7 @@ initialize () {
 		case "$OPT" in
 			N)	NO_BUILD=true ;;
 			v)	VERBOSE=true ;;
-			?)	echo "script usage: $(basename "$0") [-h] [-N]" >&2
+			?)	echo "usage: $(basename "$0") [-h] [-N]" >&2
 				exit 1 ;;
 		esac
 	done
@@ -55,7 +55,7 @@ package () {
 
 	local VSIX_COUNT=0
 	VSIX_COUNT=$(find . -maxdepth 1 -name "*.vsix" 2>/dev/null | wc -l)
-	echo "VSIX_COUNT=$VSIX_COUNT"
+	log_it "VSIX_COUNT=$VSIX_COUNT"
 
 	.github/workflows/package.sh
 
