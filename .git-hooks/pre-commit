@@ -6,8 +6,6 @@ set -eou pipefail
 
 . scripts/common.sh
 
-echo 100
-
 validate_compile () {
 	log_it >&2
 	npm run build
@@ -32,11 +30,7 @@ validate_version () {
 }
 
 ########## MAIN BLOCK ##########
-echo 101
 validate_compile
-echo 102
 validate_other
-echo 103
 validate_version
-echo 104
 log_it 'pre-commit checks successful!' >&2
