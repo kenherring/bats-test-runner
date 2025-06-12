@@ -28,6 +28,8 @@ jobs:
           fetch-depth: 0
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@master
+        with:
+          ignore_paths: ./test_projects/**
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
