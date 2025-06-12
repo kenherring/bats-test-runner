@@ -16,6 +16,7 @@ import {
 	Range,
 	Location,
 	Position,
+	FileType,
 } from 'vscode'
 import { log } from './ChannelLogger'
 import { spawn, SpawnOptions } from 'child_process'
@@ -33,12 +34,15 @@ export function activate (context: ExtensionContext) {
 	}
 	log.info('activating extension! (version=' + getExtensionVersion() + ', logLevel=' + log.getLogLevel() + ', context.extensionMode=' + context.extensionMode + ')')
 
-	// context.subscriptions.push(
-	// 	// workspace.onDidChangeConfiguration(e => { return updateConfiguration(e) }),
-	// 	workspace.onDidCreateFiles(e => { log.info('workspace.onDidCreate ' + e.files[0].fsPath) }),
-	// 	// workspace.onDidCreateFiles(e => { log.info('workspace.onDidCreate ' + e.files[0].fsPath); return createOrUpdateFile(ctrl, e, true) }),
-	// 	// workspace.onDidDeleteFiles(e => { log.info('workspace.onDidDelete ' + e.files[0].fsPath); return deleteFiles(ctrl, e.files) }),
-	// )
+
+	log.info('subscription-1')
+	context.subscriptions.push(
+		workspace.onDidSaveTextDocument((doc) => parseFileForTestCases(ctrl, findTestItem(ctrl, doc.uri))),
+		workspace.onDidCreateFiles((event) => parseFilesForTestCases(ctrl, event.files as Uri[])),
+		workspace.onDidOpenTextDocument((doc) => parseFileForTestCases(ctrl, findTestItem(ctrl, doc.uri))),
+		workspace.onDidDeleteFiles((event) => { deleteTests(ctrl, event.files as Uri[]) }),
+	)
+	log.info('subscription-2')
 
 	const runHandler = (request: TestRunRequest, token: CancellationToken) => {
 		log.info('runHandler')
@@ -64,9 +68,12 @@ export function activate (context: ExtensionContext) {
 		}
 
 		return runTests(run, context.extensionUri, testsToRun).then((sum: ITestSummary) => {
+			log.info('runTests done, summary: ' + JSON.stringify(sum))
 			testSummary = sum
 			log.info('runHandler done')
 			return
+		}, (e: unknown) => {
+			log.error('runTests failed: ' + e)
 		})
 	}
 
@@ -80,7 +87,6 @@ export function activate (context: ExtensionContext) {
 			for (const file of files) {
 				const item = ctrl.createTestItem(file.fsPath, workspace.asRelativePath(file), file)
 				item.canResolveChildren = true
-				log.info('canResolveChildren=' + item.canResolveChildren)
 				item.tags = [new TestTag('runnable')]
 				ctrl.items.add(item)
 			}
@@ -91,14 +97,11 @@ export function activate (context: ExtensionContext) {
 	ctrl.resolveHandler = (item): Thenable<void> => {
 		log.info('resolveHandler item.id=' + item?.id)
 		if (!item) {
+			deleteMissingTests(ctrl).catch((_e: unknown) => { return })
 			return workspace.findFiles('**/*.bats').then((files) => {
 				log.info('found ' + files.length + ' files')
 				for (const file of files) {
-					const item = ctrl.createTestItem(file.fsPath, workspace.asRelativePath(file), file)
-					item.canResolveChildren = true
-					log.info('canResolveChildren=' + item.canResolveChildren)
-					item.tags = [new TestTag('runnable')]
-					ctrl.items.add(item)
+					createTest(ctrl, file)
 				}
 				return
 			})
@@ -129,19 +132,44 @@ export function activate (context: ExtensionContext) {
 
 
 	const exports: IBatsExport = {
-		getTestCount: () => ctrl.items.size,
-		resolveTests: async () => {
-			await ctrl.resolveHandler!(undefined)
-			return ctrl.items.size
+		getTestCount: (testUri?: Uri) => getTestCount(ctrl, testUri),
+		resolveTests: async (uri?: Uri) => {
+			let testItem: TestItem | undefined = undefined
+			if (uri) {
+				testItem = findTestItem(ctrl, uri)
+			}
+			await ctrl.resolveHandler!(testItem)
+			return getTestCount(ctrl, uri)
 		},
 		getTestSummary: () => testSummary
 	}
 	return exports
 }
 
-function parseFileForTestCases (ctrl: TestController, item: TestItem) {
-	log.info('parseFileForTestCases item.id=' + item.id)
+function createTest (ctrl: TestController, file: Uri) {
+	const item = ctrl.createTestItem(file.fsPath, workspace.asRelativePath(file), file)
+	item.canResolveChildren = true
+	item.tags = [new TestTag('runnable')]
+	ctrl.items.add(item)
+}
 
+function parseFilesForTestCases (ctrl: TestController, files: Uri[]) {
+	const proms = []
+	log.info('parsing ' + files.length + ' files for test cases')
+	for (const f of files) {
+		const item = findTestItem(ctrl, f)
+		if (!item) {
+			createTest(ctrl, f)
+		}
+		proms.push(parseFileForTestCases(ctrl, item))
+	}
+	return Promise.all(proms)
+}
+
+function parseFileForTestCases (ctrl: TestController, item: TestItem | undefined) {
+	if (!item) {
+		return Promise.resolve()
+	}
 	if (!item.uri) {
 		throw new Error('item.uri is undefined')
 	}
@@ -150,10 +178,23 @@ function parseFileForTestCases (ctrl: TestController, item: TestItem) {
 		const content = data.toString()
 		const regex = /@test\s+["'](.*)["']\s+{/g
 		let match = regex.exec(content)
+
+		const childrenNames: string[] = []
+		for (const [, child] of item.children) {
+			childrenNames.push(child.label.toString())
+		}
+
 		while (match) {
 			const testName = match[1]
 			const testUri = item.uri!.with({ fragment: testName })
-			// const testDescription = match[2]
+
+			const idx = childrenNames.indexOf(testName)
+			if (idx > -1) {
+				// already have this test, skip it
+				childrenNames.splice(idx, 1)
+				continue
+			}
+
 			const testItem = ctrl.createTestItem(testUri.toString(), testName, item.uri)
 			testItem.tags = [new TestTag('runnable')]
 			item.children.add(testItem)
@@ -163,6 +204,16 @@ function parseFileForTestCases (ctrl: TestController, item: TestItem) {
 			testItem.description = 'line ' + line
 
 			match = regex.exec(content)
+		}
+
+		// remove any children that are no longer in the file
+		for (const name of childrenNames) {
+			for (const [, child] of item.children) {
+				if (child.label.toString() === name) {
+					item.children.delete(child.id)
+					break
+				}
+			}
 		}
 		return
 	})
@@ -176,6 +227,15 @@ function getExtensionVersion () {
 		return ext.packageJSON.version as string
 	}
 	throw new Error('unable to get extension version')
+}
+
+function getTestCount (ctrl: TestController, testUri?: Uri) {
+	if (!testUri) {
+		return ctrl.items.size
+	}
+
+	const item = findTestItem(ctrl, testUri)
+	return item?.children.size ?? 0
 }
 
 function runTests (run: TestRun, extensionUri: Uri, tests: TestItem[]) {
@@ -408,4 +468,43 @@ function processOutput (run: TestRun, currentTest: TestItem, msgs: string[]) {
 
 		run.appendOutput(msg + '\r\n')
 	}
+}
+
+function findTestItem (ctrl: TestController, uri: Uri): TestItem | undefined {
+	// find the test item by uri in the test controller
+	for (const [, item] of ctrl.items) {
+		if (item.uri && item.uri.fsPath === uri.fsPath) {
+			return item
+		}
+	}
+	return undefined
+}
+
+function deleteTests (ctrl: TestController, uris: Uri[]) {
+	for (const uri of uris) {
+		log.info('deleteTests uri=' + uri.toString())
+		const item = findTestItem(ctrl, uri)
+		if (item) {
+			log.info('deleting test item id=' + item.id)
+			ctrl.items.delete(item.id) // remove from the test controller
+		} else {
+			log.info('no test item found for uri=' + uri.toString())
+		}
+	}
+}
+
+function deleteMissingTests (ctrl: TestController) {
+	const proms = []
+	for (const [, item] of ctrl.items) {
+		proms.push(workspace.fs.stat(item.uri!)
+			.then((stat) => {
+				if (stat.type !== FileType.File) {
+					ctrl.items.delete(item.id)
+				}
+				return
+			}, (_e: unknown) => {
+				ctrl.items.delete(item.id)
+			}))
+	}
+	return Promise.all(proms)
 }

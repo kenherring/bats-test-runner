@@ -1,3 +1,5 @@
+import { Uri } from 'vscode'
+
 export interface ITestSummary {
 	started: number
 	errored: number
@@ -7,7 +9,7 @@ export interface ITestSummary {
 }
 
 export interface IBatsExport {
-	getTestCount: () => number
-	resolveTests: () => Promise<number>
+	getTestCount: (testUri?: Uri) => number
+	resolveTests: (testUri?: Uri) => Promise<number>
 	getTestSummary: () => ITestSummary | undefined
 }
