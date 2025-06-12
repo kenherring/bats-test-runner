@@ -50,3 +50,5 @@ jobs:
       - name: Publish
         if: github.ref_type == 'tag' && matrix.os == 'ubuntu-latest'
         uses: ./.github/actions/publish/
+        with:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
