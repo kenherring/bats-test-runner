@@ -44,7 +44,7 @@ function getMochaOpts (projName) {
 		// ui: 'bdd' // default; suite, test, etc
 		retries: 0,
 		parallel: false,
-		bail: true,
+		bail: false,
 		require: [
 			'mocha',
 			'tsconfig-paths/register',
@@ -60,10 +60,6 @@ function getMochaOpts (projName) {
 			xunitReporterOptions: { output: xunitFile },
 			mochaReporterSonarqubeReporterOptions: { filename: sonarFile },
 		}
-	}
-
-	if (process.env['CIRCLECI']) {
-		mochaOpts.bail = false
 	}
 
 	return mochaOpts

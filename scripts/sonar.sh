@@ -10,9 +10,9 @@ set -eou pipefail
 ##    - This is generate by running `docker/run_tests.sh` or `npm run test`
 
 ## Run this script:
-##    .circleci/sonar.sh
+##    scripts/sonar.sh
 ## Run with debug logging:
-##    .circleci/sonar.sh -Dsonar.log.level=DEBUG
+##    scripts/sonar.sh -Dsonar.log.level=DEBUG
 
 main_block () {
     initialize
@@ -44,7 +44,7 @@ package () {
     echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}] DO_PACKAGE=$DO_PACKAGE"
 
     if $DO_PACKAGE; then
-        .circleci/package.sh
+        .github/workflows/package.sh
     else
         echo "[$(date +%Y-%m-%d:%H:%M:%S) $0 ${FUNCNAME[0]}] skipping package"
     fi
