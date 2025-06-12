@@ -22,7 +22,6 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - run: env && exit 1
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -49,5 +48,5 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Publish
-        if: success() && startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
+        if: github.ref_type == 'tag' && matrix.os == 'ubuntu-latest'
         uses: ./.github/workflows/publish.yml
