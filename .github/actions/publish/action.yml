@@ -1,0 +1,18 @@
+
+name: Publish Release
+description: Publish release tag to VSCode Marketplace
+
+runs:
+  using: "composite"
+  steps:
+    - run: echo "GITHUB_REF_TYPE=$GITHUB_REF_TYPE GITHUB_HEAD_REF=$GITHUB_HEAD_REF GITHUB_REF_NAME=$GITHUB_REF_NAME" && exit 1
+      shell: bash
+    - name: Publish
+      shell: bash
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      run: |
+        npm run package
+        gh release upload "$GITHUB_HEAD_REF" bats-test-runner-*.vsix
+        npm run deploy
