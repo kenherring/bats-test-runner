@@ -12,6 +12,10 @@ initialize () {
 	VERBOSE=${VERBOSE:-false}
 	PACKAGE_VERSION=$(node -p "require('./package.json').version")
 
+	GITHUB_REF_TYPE=${GITHUB_REF_TYPE:-}
+	GITHUB_REF_NAME=${GITHUB_REF_NAME:-}
+	GITHUB_HEAD_REF=${GITHUB_HEAD_REF:-}
+
 	while getopts 'hNoVv' OPT; do
 		case "$OPT" in
 			N)	NO_BUILD=true ;;

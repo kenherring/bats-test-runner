@@ -14,6 +14,7 @@ initialize () {
     PACKAGE_VERSION=$(node -p "require('./package.json').version")
 
     log_it "GITHUB_REF_TYPE=${GITHUB_REF_TYPE:-}"
+    log_it "GITHUB_REF_NAME=${GITHUB_REF_NAME:-}"
     log_it "GITHUB_HEAD_REF=${GITHUB_HEAD_REF:-}"
 
     if [ -z "${GITHUB_HEAD_REF:-}" ]; then
@@ -31,7 +32,7 @@ initialize () {
     fi
 
     if [ "$GITHUB_REF_TYPE" == "tag" ]; then
-        MINOR=$(cut -d. -f2 <<< "$GITHUB_HEAD_REF")
+        MINOR=$(cut -d. -f2 <<< "$GITHUB_REF_NAME")
         echo "MINOR=$MINOR"
         if [ "$(( MINOR % 2 ))" = "1" ]; then
             log_it "minor tag is odd. packaging as pre-release. (MINOR=$MINOR)"
@@ -59,7 +60,7 @@ package_version () {
         ARGS+=("--githubBranch" "$GITHUB_HEAD_REF")
     else
         ARGS+=("--githubBranch" "main")
-        log_it "defaulting branch to 'main' for GITHUB_REF_TYPE=${GITHUB_REF_TYPE:-} and GITHUB_HEAD_REF=${GITHUB_HEAD_REF:-}"
+        log_it "defaulting branch to 'main' for GITHUB_REF_TYPE=${GITHUB_REF_TYPE:-}"
     fi
     ARGS+=("--no-git-tag-version")
     if $PRERELEASE; then
