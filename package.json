@@ -2,7 +2,7 @@
 	"name": "bats-test-runner",
 	"displayName": "BATS Test Runner",
 	"description": "BATS Test Runner for VSCode",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"engineStrict": true,
 	"galleryBanner": {
 		"color": "#007ACC",
