@@ -1,5 +1,6 @@
 # [0.1.1](https://github.com/kenherring/bats-test-runner/releases/tag/0.1.1) - 2025-06-12 (pre-release)
 
+* Add ShellCheck action (#21)
 * Remove /.circleci (#18)
 * Separate publish action config (#20)
 * Skip sonar scan for dependabot PRs (#19)
