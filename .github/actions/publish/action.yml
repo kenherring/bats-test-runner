@@ -21,4 +21,4 @@ runs:
           exit 1
         fi
         gh release upload "$GITHUB_REF_NAME" bats-test-runner-*.vsix
-        # npm run deploy
+        npm run deploy
