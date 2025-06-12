@@ -1,0 +1,19 @@
+name: Publish Release
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  publish:
+    steps:
+    - name: Publish
+      if: startsWith(github.ref, 'refs/tags/')
+      env:
+        GH_REF: ${{ github.ref }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      run: |
+        npm run package
+        gh release upload "${GH_REF//refs\/tags\/}" bats-test-runner-*.vsix
+        npm run deploy

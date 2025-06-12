@@ -9,6 +9,10 @@ on:
     types:
       - created
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build:
     strategy:
@@ -40,9 +44,5 @@ jobs:
       if: success() && startsWith(github.ref, 'refs/tags/') && matrix.os == 'ubuntu-latest'
       env:
         GH_REF: ${{ github.ref }}
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
         VSCE_PAT: ${{ secrets.VSCE_PAT }}
-      run: |
-        npm run package
-        gh release upload "${GH_REF//refs\/tags\/}" bats-test-runner-*.vsix
-        npm run deploy
+      uses: ./.github/workflows/publish.yml
