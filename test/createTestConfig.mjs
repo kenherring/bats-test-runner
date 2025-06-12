@@ -16,7 +16,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const vsVersionNum = '1.88.0'
 
 function writeConfigToFile (name, config) {
-	fs.writeFileSync('.vscode-test.' + name + '.bk.json', JSON.stringify(config, null, 4).replace('    ', '\t'))
+	if (process.env['VERBOSE'] != 'false' && process.env['VERBOSE'] != '0') {
+		fs.writeFileSync('.vscode-test.' + name + '.bk.json', JSON.stringify(config, null, 4).replace('    ', '\t'))
+	}
 }
 
 function getMochaTimeout (projName) {
