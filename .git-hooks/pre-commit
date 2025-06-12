@@ -30,7 +30,7 @@ validate_version () {
 }
 
 ########## MAIN BLOCK ##########
-validate_compile
 validate_other
 validate_version
+validate_compile
 log_it 'pre-commit checks successful!' >&2
