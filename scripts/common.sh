@@ -25,7 +25,13 @@ validate_version_updated() {
 	log_it 'validating version matches throughout the project...' >&2
 	local PACKAGE_VERSION SONAR_PROJECT_VERSION CHANGELOG_VERSION
 	PACKAGE_VERSION=$(jq -r '.version' package.json)
+	PACKAGE_LOCK_VERSION=$(jq -r '.version' package-lock.json)
 	SONAR_PROJECT_VERSION=$(grep -E '^sonar.projectVersion=' sonar-project.properties | cut -d'=' -f2)
+
+	if [ "$PACKAGE_VERSION" != "$PACKAGE_LOCK_VERSION" ]; then
+		log_error "package.json version ($PACKAGE_VERSION) does not match package-lock.json version ($PACKAGE_LOCK_VERSION)"
+		exit 1
+	fi
 
 	if [ "$PACKAGE_VERSION" != "$SONAR_PROJECT_VERSION" ]; then
 		log_error "package.json version ($PACKAGE_VERSION) does not match 'sonar.projectVersion' ($SONAR_PROJECT_VERSION) in 'sonar-project.properties'"

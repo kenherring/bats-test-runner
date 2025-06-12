@@ -22,7 +22,6 @@ jobs:
         os: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - run: env
       - name: Checkout
         uses: actions/checkout@v4
         with:

@@ -1,7 +1,12 @@
 #!/bin/bash
 set -eou pipefail
 
-. scripts/common.sh
+if [ ! -f ./scripts/common.sh ]; then
+    echo "Error: common.sh not found in scripts directory."
+    exit 1
+fi
+
+. ./scripts/common.sh
 
 initialize () {
     log_it
@@ -14,6 +19,7 @@ initialize () {
     if [ -z "${GITHUB_HEAD_REF:-}" ]; then
         GITHUB_REF_TYPE=branch
         GITHUB_HEAD_REF=$(git branch --show-current)
+        log_it "defaulting GITHUB_HEAD_REF to current branch: $GITHUB_HEAD_REF"
     fi
 
     if [ -z "${GITHUB_HEAD_REF:-}" ]; then
@@ -24,19 +30,30 @@ initialize () {
         exit 1
     fi
 
-    MINOR=$(cut -d. -f2 <<< "$GITHUB_HEAD_REF")
-    if [ "$(( MINOR % 2 ))" = "1" ]; then
-        log_it "minor tag is odd. packaging as pre-release. (MINOR=$MINOR)"
+    if [ "$GITHUB_REF_TYPE" == "tag" ]; then
+        MINOR=$(cut -d. -f2 <<< "$GITHUB_HEAD_REF")
+        echo "MINOR=$MINOR"
+        if [ "$(( MINOR % 2 ))" = "1" ]; then
+            log_it "minor tag is odd. packaging as pre-release. (MINOR=$MINOR)"
+            PRERELEASE=true
+        fi
+    elif [ "$GITHUB_REF_TYPE" == "branch" ]; then
+        log_it 'branch detected. packaging as pre-release'
         PRERELEASE=true
+    else
+        log_error "unknown GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
+        exit 1
     fi
 
-    rm -f ./*.vsix
+
+    if find . -name "*.vsix" -type f; then
+        log_it 'removing existing vsix files'
+        rm -f ./*.vsix
+    fi
+
 }
 
 package_version () {
-    local VSCODE_VERSION=$1
-    log_it "PACKAGE_VERSION=$VSCODE_VERSION"
-
     local ARGS=()
     if [ "${GITHUB_REF_TYPE:-}" = "branch" ]; then
         ARGS+=("--githubBranch" "$GITHUB_HEAD_REF")
@@ -48,19 +65,9 @@ package_version () {
     if $PRERELEASE; then
         ARGS+=("--pre-release")
     fi
-    if [ "$VSCODE_VERSION" != stable ]; then
-        ARGS+=(-o "bats-test-runner-${VSCODE_VERSION}-${PACKAGE_VERSION}.vsix")
-    fi
 
-    if [ "$VSCODE_VERSION" != "stable" ]; then
-        mv package.json package.bkup.json
-        cp "package.$VSCODE_VERSION.json" package.json
-    fi
     npm install
     npx vsce package "${ARGS[@]}"
-    if [ "$VSCODE_VERSION" != "stable" ]; then
-        mv package.bkup.json package.json
-    fi
 }
 
 run_lint () {

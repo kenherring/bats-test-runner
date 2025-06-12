@@ -18,3 +18,7 @@ tmp/
 *.zip
 
 /vscode.d.ts
+
+proj0.2.bats
+proj0.4.bats
+proj0.5.bats
