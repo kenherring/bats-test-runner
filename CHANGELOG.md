@@ -1,6 +1,6 @@
 # [0.1.3](https://github.com/kenherring/bats-test-runner/releases/tag/0.1.3) - 2025-06-12 (pre-release)
 
-* Fixes for release publishing (#22)
+* Fixes for release publishing (#22, #23)
 * Add ShellCheck action (#21)
 * Remove /.circleci (#18)
 * Separate publish action config (#20)
