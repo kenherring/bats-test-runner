@@ -82,7 +82,7 @@
 		"watch": "npm run build -- --watch"
 	},
 	"dependencies": {
-		"bats": "^1.11.1",
+		"bats": "^1.12.0",
 		"minimatch": "^10.0.3",
 		"node-json-minify": "^3.0.0",
 		"xml2js": "^0.6.2"
