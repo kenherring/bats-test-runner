@@ -103,7 +103,7 @@
 		"@vscode/test-electron": "^2.4.1",
 		"@vscode/vsce": "^3.5.0",
 		"esbuild": "^0.25.5",
-		"eslint": "^9.28.0",
+		"eslint": "^9.30.0",
 		"eslint-formatter-unix": "^8.40.0",
 		"eslint-plugin-promise": "^7.2.1",
 		"mocha": "^11.6.0",
