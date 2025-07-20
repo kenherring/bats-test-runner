@@ -57,7 +57,7 @@
 		"bash test"
 	],
 	"engines": {
-		"vscode": "^1.96.0"
+		"vscode": "^1.102.0"
 	},
 	"categories": [
 		"Testing"
