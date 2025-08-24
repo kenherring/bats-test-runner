@@ -41,7 +41,8 @@ jobs:
         if: runner.os == 'Linux'
       - run: npm run test:coverage
         if: runner.os != 'Linux'
-      - run: npm run lint -- -f json -o artifacts/eslint_report.json
+      - run: npm run lint:sonar
+        if: matrix.os == 'ubuntu-latest'
       - name: SonarQube Scan
         if: matrix.os == 'ubuntu-latest' && github.event.pull_request.user.login != 'dependabot[bot]'
         uses: SonarSource/sonarqube-scan-action@v5
