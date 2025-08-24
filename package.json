@@ -71,6 +71,7 @@
 		"build": "node esbuild.js",
 		"rebuild": "rm -r dist && npm run build",
 		"lint": "npx eslint ./{src,test}/**/*.ts",
+		"lint:sonar": "npx eslint ./{src,test}/**/*.ts -f json -o artifacts/eslint_report.json || true",
 		"lint-fix-all": "npx eslint ./{src,test}/**/*.ts --fix",
 		"package": "vsce package",
 		"deploy": "vsce publish",
