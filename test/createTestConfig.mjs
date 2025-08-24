@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 // @ts-nocheck
 
 import { defineConfig } from '@vscode/test-cli'
@@ -69,9 +64,7 @@ function getMochaOpts (projName) {
 
 function getExtensionVersion () {
 	const packageJson = path.resolve(__dirname, '..', 'package.json')
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const packageData = JSON.parse(fs.readFileSync(packageJson, 'utf8'))
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const version = packageData.version
 	if (!version) {
 		throw new Error('Version not found in package.json')

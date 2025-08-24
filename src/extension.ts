@@ -23,7 +23,6 @@ import { spawn, SpawnOptions } from 'child_process'
 import { IBatsExport, ITestSummary } from 'extensionExports'
 
 export function activate (context: ExtensionContext) {
-
 	let testSummary: ITestSummary | undefined = undefined
 	const ctrl = tests.createTestController('batsTestController', 'BATS')
 
@@ -34,12 +33,11 @@ export function activate (context: ExtensionContext) {
 	}
 	log.info('activating extension! (version=' + getExtensionVersion() + ', logLevel=' + log.getLogLevel() + ', context.extensionMode=' + context.extensionMode + ')')
 
-
 	log.info('subscription-1')
 	context.subscriptions.push(
-		workspace.onDidSaveTextDocument((doc) => parseFileForTestCases(ctrl, findTestItem(ctrl, doc.uri))),
-		workspace.onDidCreateFiles((event) => parseFilesForTestCases(ctrl, event.files as Uri[])),
-		workspace.onDidOpenTextDocument((doc) => parseFileForTestCases(ctrl, findTestItem(ctrl, doc.uri))),
+		workspace.onDidSaveTextDocument(doc => parseFileForTestCases(ctrl, findTestItem(ctrl, doc.uri))),
+		workspace.onDidCreateFiles(event => parseFilesForTestCases(ctrl, event.files as Uri[])),
+		workspace.onDidOpenTextDocument(doc => parseFileForTestCases(ctrl, findTestItem(ctrl, doc.uri))),
 		workspace.onDidDeleteFiles((event) => { deleteTests(ctrl, event.files as Uri[]) }),
 	)
 	log.info('subscription-2')
@@ -79,7 +77,7 @@ export function activate (context: ExtensionContext) {
 
 	ctrl.refreshHandler = (token: CancellationToken) => {
 		log.info('refreshHandler')
-		for (const [id, ] of ctrl.items) {
+		for (const [id] of ctrl.items) {
 			ctrl.items.delete(id)
 		}
 		return workspace.findFiles('**/*.bats').then((files) => {
@@ -130,7 +128,6 @@ export function activate (context: ExtensionContext) {
 
 	log.info('extension activated!')
 
-
 	const exports: IBatsExport = {
 		getTestCount: (testUri?: Uri) => getTestCount(ctrl, testUri),
 		resolveTests: async (uri?: Uri) => {
@@ -141,7 +138,7 @@ export function activate (context: ExtensionContext) {
 			await ctrl.resolveHandler!(testItem)
 			return getTestCount(ctrl, uri)
 		},
-		getTestSummary: () => testSummary
+		getTestSummary: () => testSummary,
 	}
 	return exports
 }
@@ -239,7 +236,6 @@ function getTestCount (ctrl: TestController, testUri?: Uri) {
 }
 
 function runTests (run: TestRun, extensionUri: Uri, tests: TestItem[]) {
-
 	const testSummary: ITestSummary = {
 		started: 0,
 		errored: 0,
@@ -317,7 +313,6 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 		// '--line-reference-format',
 		// 'colon',
 	]
-
 
 	if (item.parent) {
 		args.push('--filter', '\'' + item.label + '\'')
@@ -438,7 +433,6 @@ async function executeTest (run: TestRun, extensionUri: Uri, item: TestItem) {
 }
 
 function processOutput (run: TestRun, currentTest: TestItem, msgs: string[]) {
-
 	// const locationRegex1 = /file (.*\.bats), line (\d+)/
 	const locationRegex2 = /^(# )(.*)(: line )(\d+)(: )(.*)$/
 	const commandRegex = /# *`(.*)' (failed.*)/
@@ -448,7 +442,6 @@ function processOutput (run: TestRun, currentTest: TestItem, msgs: string[]) {
 		const commandMatch = commandRegex.exec(msg)
 		// const locationMatch1 = locationRegex1.exec(msg)
 		const locationMatch2 = locationRegex2.exec(msg)
-
 
 		if (commandMatch) {
 			const testMessage = new TestMessage(commandMatch[2])
