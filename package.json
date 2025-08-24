@@ -94,7 +94,7 @@
 		"@stylistic/eslint-plugin": "^5.2.3",
 		"@swc-node/register": "^1.11.1",
 		"@types/mocha": "^10.0.10",
-		"@types/node": "22.X",
+		"@types/node": "24.X",
 		"@types/vscode": "^1.103.0",
 		"@types/xml2js": "^0.4.14",
 		"@typescript-eslint/eslint-plugin": "^8.38.0",
