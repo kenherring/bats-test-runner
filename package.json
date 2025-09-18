@@ -57,7 +57,7 @@
 		"bash test"
 	],
 	"engines": {
-		"vscode": "^1.103.0"
+		"vscode": "^1.104.0"
 	},
 	"categories": [
 		"Testing"
@@ -95,7 +95,7 @@
 		"@swc-node/register": "^1.11.1",
 		"@types/mocha": "^10.0.10",
 		"@types/node": "24.4",
-		"@types/vscode": "^1.103.0",
+		"@types/vscode": "^1.104.0",
 		"@types/xml2js": "^0.4.14",
 		"@typescript-eslint/eslint-plugin": "^8.44.0",
 		"@typescript-eslint/parser": "^8.44.0",
