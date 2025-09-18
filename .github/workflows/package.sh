@@ -67,7 +67,7 @@ package_version () {
         ARGS+=("--pre-release")
     fi
 
-    npm install
+    npm ci
     npx vsce package "${ARGS[@]}"
 }
 

@@ -30,7 +30,7 @@ initialize () {
 	fi
 
 	if [ ! -d node_modules ]; then
-		npm install
+		npm ci
 	fi
 }
 
