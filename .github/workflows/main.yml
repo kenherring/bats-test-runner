@@ -45,7 +45,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
       - name: SonarQube Scan
         if: matrix.os == 'ubuntu-latest' && github.event.pull_request.user.login != 'dependabot[bot]'
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Publish
