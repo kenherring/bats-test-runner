@@ -84,7 +84,7 @@
 	},
 	"dependencies": {
 		"bats": "^1.13.0",
-		"minimatch": "^10.0.3",
+		"minimatch": "^10.1.1",
 		"node-json-minify": "^3.0.0",
 		"xml2js": "^0.6.2"
 	},
