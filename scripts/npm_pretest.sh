@@ -30,7 +30,7 @@ initialize () {
 	fi
 
 	if [ ! -d node_modules ]; then
-		npm ci
+		npm ci --ignore-scripts
 	fi
 }
 
